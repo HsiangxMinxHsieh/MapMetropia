@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">Metropia</string>
+    <string name="title_activity_maps">MapMetropia</string>
+    <string name="splash_no_permission">請給App權限以完成此作業。</string>
+    <string name="map_my_location_here">你在這裡</string>
+</resources>

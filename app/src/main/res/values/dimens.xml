@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <dimen name="btn_text_size">16px</dimen>
+    <dimen name="btn_stroke_width">1px</dimen>
+
+    <dimen name="dialog_background_corner">14px</dimen>
+    <dimen name="dialog_button_corner">12px</dimen>
+
+    <dimen name="title_icon_percent">0.065</dimen>
+    <dimen name="title_icon_margin">16dp</dimen>
+    <dimen name="marker_unselected_size">24dp</dimen>
+    <dimen name="marker_selected_size">48dp</dimen>
+
+    <dimen name="setting_margin">10dp</dimen>
+</resources>

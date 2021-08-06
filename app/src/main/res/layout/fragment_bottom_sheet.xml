@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <com.lihang.ShadowLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        app:hl_shadowHiddenLeft="true"
+        app:hl_shadowHiddenRight="true"
+        app:hl_cornerRadius_leftTop="20dp"
+        app:hl_cornerRadius_rightTop="20dp"
+        app:hl_shadowColor="@color/black"
+        app:hl_shadowLimit="10dp">
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/bottom_sheet"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="0dp"
+            android:background="@color/white"
+            android:orientation="vertical">
+
+            <View
+                android:id="@+id/vv_ios_bar"
+                android:layout_width="0dp"
+                android:layout_height="4dp"
+                android:layout_marginTop="4dp"
+                android:background="@color/gray"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.0773333333" />
+
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:id="@+id/cl_summary_in_bottom"
+                android:layout_width="match_parent"
+                android:layout_height="1000dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent">
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rv_journey_detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:overScrollMode="never"
+                app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/cl_summary_in_bottom"
+                tools:itemCount="8"
+                tools:listitem="@layout/adapter_bottom_journey" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+    </com.lihang.ShadowLayout>
+</layout>
