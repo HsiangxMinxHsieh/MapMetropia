@@ -13,13 +13,19 @@ import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
-import com.timmy.mapmetropia.base.staticRatio
 import com.timmy.mapmetropia.util.logi
 
-fun Double.testViewSize(testRatio:Double, TAG:String="testViewSize"):Double{
-    logi("testViewSize","$TAG,ratio=>${testRatio}")
-    logi("testViewSize","$TAG,result=>${this*testRatio}")
-    return this*testRatio
+/**測試畫面比例用的方法
+ * @param testRatio 測試中的比例(會於畫面中印出)
+ * @param TAG 測試的View，可傳入或不傳入
+ * 使用範例： ivIcon.setViewSizeByDpUnit(,width.testViewSize(0.1,"ivIcon width"),width.testViewSize(0.1,"ivIcon height"))
+ * @author 蝦米
+ * @date 2021/08/07
+ * */
+fun Double.testViewSize(testRatio: Double, TAG: String = "testViewSize"): Double {
+    logi("testViewSize", "$TAG,ratio=>${testRatio}")
+    logi("testViewSize", "$TAG,result=>${this * testRatio}")
+    return this * testRatio
 }
 
 
@@ -85,7 +91,7 @@ fun View.setViewSize(w: Int, h: Int) {
  * @date 2015/5/8 下午3:13:42
  * @version
  */
-fun View.setViewSizeByDpUnit( w: Int, h: Int) {
+fun View.setViewSizeByDpUnit(w: Int, h: Int) {
     setViewSize(getPixelFromDpByDevice(this.context, w), getPixelFromDpByDevice(this.context, h))
 }
 

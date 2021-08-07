@@ -10,10 +10,16 @@ import com.google.android.gms.maps.model.LatLng
 import com.google.gson.Gson
 import com.timmy.mapmetropia.BuildConfig
 import java.io.*
+import java.text.DecimalFormat
 import java.text.Format
 import java.text.SimpleDateFormat
 import java.time.LocalDateTime
 import java.util.*
+
+
+fun Double.format(format: String = "#.#"): String {
+    return DecimalFormat(format).format(this)
+}
 
 fun Any.toJson() = Gson().toJson(this)
 

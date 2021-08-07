@@ -4,6 +4,8 @@ import java.text.ParseException
 import java.text.SimpleDateFormat
 import java.util.*
 
+fun Int.toTimeInclude12hour() = this.toLong().times(DateTool.oneSec).toDate().toString("h:mm a")
+
 fun String.toDate(format: String): Date? {
     var milliseconds: Long = -1
     try {
@@ -28,7 +30,7 @@ fun Long.toInteval(): Long {
 }
 
 fun Date.toString(format: String, timeZone: TimeZone = TimeZone.getDefault()): String {
-    val sdf = SimpleDateFormat(format, Locale.getDefault())
+    val sdf = SimpleDateFormat(format, Locale.ENGLISH) //強制用英文(因 Zeplin 上是英文)
     sdf.timeZone = timeZone
     return sdf.format(this)
 }

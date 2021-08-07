@@ -31,7 +31,6 @@ import pub.devrel.easypermissions.EasyPermissions
 import java.util.*
 import com.timmy.mapmetropia.base.BaseFragment
 import com.timmy.mapmetropia.base.BaseRecyclerViewDataBindingAdapter
-import com.timmy.mapmetropia.base.staticRatio
 import com.timmy.mapmetropia.databinding.AdapterBottomJourneyBinding
 import com.timmy.mapmetropia.databinding.AdapterBottomJourneySummaryBinding
 import com.timmy.mapmetropia.listener.BackListener
@@ -63,6 +62,8 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
 
         initView()
 
+        initValue()
+
         initSensor()
 
         initMap()
@@ -71,6 +72,7 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
 
 //        initScreenSatus()
     }
+
 
     lateinit var journeyData: JourneyData
     private fun initData() { // 初始化所有資料，此為讀入raw的Json檔
@@ -84,23 +86,6 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
 
     }
 
-    override fun onBackPressed(): Boolean {
-        logi("onBackPressed", "firstShowBottom 是=>$firstShowBottom")
-        return when {
-            firstShowBottom -> {
-                false
-            }
-            behavior.state != BottomSheetBehavior.STATE_HIDDEN -> {
-                setBottomSheetState(BottomSheetBehavior.STATE_HIDDEN)
-                true
-            }
-            else -> {
-                activity?.finish()
-                logi("onBackPressed", "else被呼較 ")
-                false
-            }
-        }
-    }
 
     /**因為Google地圖內沒有方法取得現在方位(iOS卻有...Orz)，因此要設定Sensor使用*/
     private fun initSensor() {
@@ -124,33 +109,45 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
         screenRatio //必須於此取一次，staticRatio才會有值
         val calculateDistance = heightPixel.toDouble() // 公用距離，為高度double值
         mBinding.apply {
-            ivBack.background = getRoundBg(mContext, rc, R.color.transparent, R.color.theme_blue, 2)
-            ivBack.setViewSizeByDpUnit(36, 36)
-            ivBack.setMarginByDpUnit((calculateDistance * 0.005).toInt(), (calculateDistance * 0.02).toInt(), 0, 0)
-
-            ivAnchor.background = getRoundBg(mContext, rc, R.color.white, R.color.gray, 2)
-            ivAnchor.setViewSizeByDpUnit(48, 48)
-            ivAnchor.setMarginByDpUnit(0, 0,  (calculateDistance.testViewSize(0.02, "ivAnchor Margin Bottom Parent")).toInt(), (calculateDistance.testViewSize(0.036, "ivAnchor Margin Bottom Parent")).toInt())
-
-            val clSummaryHeight = (calculateDistance.testViewSize(0.05, "Green clSummary Height")).toInt()
-            clSummary.setViewSizeByDpUnit(widthPixel, clSummaryHeight)
-//            clSummary.isVisible = false
+            ivBack.apply {
+                background = getRoundBg(mContext, rc, R.color.transparent, R.color.theme_blue, 2)
+                setViewSizeByDpUnit(36, 36)
+                setMarginByDpUnit((calculateDistance * 0.005).toInt(), (calculateDistance * 0.02).toInt(), 0, 0)
+            }
+            ivAnchor.apply {
+                background = getRoundBg(mContext, rc, R.color.white, R.color.gray, 2)
+                setViewSizeByDpUnit(48, 48)
+                setMarginByDpUnit(0, 0, (calculateDistance * 0.02).toInt(), (calculateDistance * 0.036).toInt())
+            }
+            val clSummaryHeight = (calculateDistance * 0.05).toInt()
+//            clSummary.setViewSizeByDpUnit(widthPixel, clSummaryHeight) // 不知道為什麼，設定這個會讓裡面的約束失效。
             val cardCorner = (calculateDistance * 0.03).toInt()
 
-            icBottom.slContent.setCornerRadius(cardCorner)
-            icBottom.bottomSheet.maxHeight = (calculateDistance * 0.8).toInt() // 最大高度設置為螢幕高的 約0.8(Zeplin計算結果)
+            val clSummaryInBottomHeight = (calculateDistance * 0.031).toInt()
+            icBottom.apply {
+                slContent.setCornerRadius(cardCorner)
+                bottomSheet.maxHeight = (calculateDistance * 0.8).toInt() // 最大高度設置為螢幕高的 約0.8(Zeplin計算結果)
+                vvIosBar.setMarginByDpUnit(0, 4, 0, 0)
+                vvIosBar.background = getRoundBg(mContext, rc, R.color.gray)
 
-            icBottom.vvIosBar.setMarginByDpUnit(0, 4, 0, 0)
-            icBottom.vvIosBar.background = getRoundBg(mContext, rc, R.color.gray)
-            val clSummaryInBottomHeight = (calculateDistance.testViewSize(0.031, "Blue clSummaryInBottom Height")).toInt()
-            icBottom.clSummaryInBottom.setViewSizeByDpUnit(widthPixel, clSummaryInBottomHeight)
+                clSummaryInBottom.setViewSizeByDpUnit(widthPixel, clSummaryInBottomHeight)
+            }
 
             behavior.peekHeight = ViewTool.DpToPx(mContext, ((clSummaryInBottomHeight + clSummaryHeight) * 1.1).toFloat()) // 偷看高度設定 // clSummaryInBottom + clSummary
 
+            val cn = 10 //corner
+            llBuy.background = getRectangleBg(mContext, cn, cn, cn, cn, R.color.light_green, 0, 0)
+            llStartTrip.background = getRectangleBg(mContext, cn, cn, cn, cn, R.color.theme_blue, 0, 0)
+
+            tvTotalSpendTime.setTextSize(17)
+            tvTotalSpendMoneyButton.setTextSize(16)
+            tvStartTime.setTextSize(14)
+            tvEndTime.setTextSize(14)
+            tvStartButton.setTextSize(16)
+
         }
 
-        initScreenSatus()
-
+        initScreenStatus()
     }
 
     private fun initEvent() {
@@ -161,7 +158,7 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
         }
 
         mBinding.ivBack.setOnClickListener { // 本來返回鍵做成可以離開這這個App，後來覺得沒有案鍵可以回到我精心畫的路徑圖有點可惜，所以現在會回到路徑圖 XD
-            initScreenSatus()
+            initScreenStatus()
             initZoomToPathLocation(true)
 //            onBackPressed()
         }
@@ -169,9 +166,50 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
 
     }
 
-
-    private fun initScreenSatus() {
+    private fun initScreenStatus() {
         setBottomSheetState(BottomSheetBehavior.STATE_COLLAPSED)
+    }
+
+    private fun initValue() { //填值進畫面
+        mBinding.apply {
+            tvTotalSpendTime.text =mContext.getString(R.string.total_spend_time).format(journeyData.estimatedTime)
+            tvTotalSpendMoneyButton.text = mContext.getString(R.string.total_price).format(journeyData.totalPrice.format("#.00"))
+            tvStartTime.text =journeyData.startedOn.toTimeInclude12hour()
+            tvEndTime.text =journeyData.endedOn.toTimeInclude12hour()
+        }
+
+        showBottomView(journeyData)
+    }
+
+
+    private fun initMap() {
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+//        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        if (this::mMap.isInitialized)
+            return
+
+        val mapFragment = SupportMapFragment.newInstance()
+        mapFragment.getMapAsync(this@MapsFragment)
+        childFragmentManager.beginTransaction().replace(R.id.map, mapFragment).commit()
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext)
+    }
+
+    override fun onBackPressed(): Boolean {
+        logi("onBackPressed", "firstShowBottom 是=>$firstShowBottom")
+        return when {
+            firstShowBottom -> {
+                false
+            }
+            behavior.state != BottomSheetBehavior.STATE_HIDDEN -> {
+                setBottomSheetState(BottomSheetBehavior.STATE_HIDDEN)
+                true
+            }
+            else -> {
+                activity?.finish()
+                logi("onBackPressed", "else被呼較 ")
+                false
+            }
+        }
     }
 
     // 開啟 GPS 監聽器
@@ -267,17 +305,6 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
         }
     }
 
-    private fun initMap() {
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-//        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
-        if (this::mMap.isInitialized)
-            return
-
-        val mapFragment = SupportMapFragment.newInstance()
-        mapFragment.getMapAsync(this@MapsFragment)
-        childFragmentManager.beginTransaction().replace(R.id.map, mapFragment).commit()
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext)
-    }
 
     /**題目要求，一開始縮放到路徑的位置*/
     private fun initZoomToPathLocation(needAnimation: Boolean = false) {
@@ -334,7 +361,7 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
             if (it == myLocationMark) {
                 return@setOnMarkerClickListener true
             }
-            showBottomView(journeyData)
+
             return@setOnMarkerClickListener true
         }
     }
@@ -484,22 +511,38 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
         }, 300L)
     }
 
-
     @SuppressLint("ClickableViewAccessibility")
     private fun showBottomView(journeyData: JourneyData?) {
         if (journeyData == null)
             return
 
-
         //設定顯示內容
         mBinding.icBottom.apply {
             //RecyclerView初始化
 
-
             setBottomSheetState(BottomSheetBehavior.STATE_COLLAPSED)
         }
 
+    }
 
+    /** 底部視圖的上方Summary Adapter */
+    class JourneySummaryAdapter(val context: Context) :
+        BaseRecyclerViewDataBindingAdapter<JourneyData.Step>(context, R.layout.adapter_bottom_journey_summary) {
+        override fun initViewHolder(viewHolder: ViewHolder) {
+            val binding = viewHolder.binding as AdapterBottomJourneySummaryBinding
+        }
+
+        override fun onBindViewHolder(viewHolder: ViewHolder, position: Int, data: JourneyData.Step) {
+            val binding = viewHolder.binding as AdapterBottomJourneySummaryBinding
+        }
+
+        override fun onItemClick(view: View, position: Int, data: JourneyData.Step): Boolean {
+            return false
+        }
+
+        override fun onItemLongClick(view: View, position: Int, data: JourneyData.Step): Boolean {
+            return false
+        }
     }
 
     /** 底部視圖的詳細行程的 Adapter */
@@ -524,23 +567,4 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
 
     }
 
-    /** 底部視圖的圖片 Adapter */
-    class PicAdapter(val context: Context) :
-        BaseRecyclerViewDataBindingAdapter<JourneyData.Step>(context, R.layout.adapter_bottom_journey_summary) {
-        override fun initViewHolder(viewHolder: ViewHolder) {
-            val binding = viewHolder.binding as AdapterBottomJourneySummaryBinding
-        }
-
-        override fun onBindViewHolder(viewHolder: ViewHolder, position: Int, data: JourneyData.Step) {
-            val binding = viewHolder.binding as AdapterBottomJourneySummaryBinding
-        }
-
-        override fun onItemClick(view: View, position: Int, data: JourneyData.Step): Boolean {
-            return false
-        }
-
-        override fun onItemLongClick(view: View, position: Int, data: JourneyData.Step): Boolean {
-            return false
-        }
-    }
 }
