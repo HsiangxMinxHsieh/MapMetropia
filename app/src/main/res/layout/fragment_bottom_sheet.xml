@@ -3,15 +3,15 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools">
 
-<!--    <com.lihang.ShadowLayout-->
-<!--        android:id="@+id/sl_content"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="match_parent"-->
-<!--        android:layout_gravity="center_horizontal"-->
-<!--        app:hl_shadowColor="@color/black"-->
-<!--        app:hl_shadowHiddenLeft="true"-->
-<!--        app:hl_shadowHiddenRight="true"-->
-<!--        app:hl_shadowLimit="10dp">-->
+    <com.lihang.ShadowLayout
+        android:id="@+id/sl_content"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_horizontal"
+        app:hl_shadowColor="@color/black"
+        app:hl_shadowHiddenLeft="true"
+        app:hl_shadowHiddenRight="true"
+        app:hl_shadowLimit="10dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:id="@+id/bottom_sheet"
@@ -43,10 +43,9 @@
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rv_journey_summary"
-                    android:layout_marginBottom="10dp"
-                    android:background="@color/light_green"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:overScrollMode="never"
                     android:orientation="horizontal"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
                     app:layout_constraintBottom_toBottomOf="parent"
@@ -75,9 +74,9 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/cl_summary_in_bottom"
                 tools:itemCount="8"
-                tools:listitem="@layout/adapter_bottom_journey" />
+                tools:listitem="@layout/adapter_bottom_journey_detail" />
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
-<!--    </com.lihang.ShadowLayout>-->
+    </com.lihang.ShadowLayout>
 </layout>

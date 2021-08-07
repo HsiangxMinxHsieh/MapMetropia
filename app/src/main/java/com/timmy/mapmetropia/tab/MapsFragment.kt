@@ -12,10 +12,7 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.view.*
-import android.widget.LinearLayout
 import android.widget.Toast
-import androidx.constraintlayout.widget.ConstraintLayout
-import androidx.core.view.ViewCompat.setOverScrollMode
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.google.android.gms.location.FusedLocationProviderClient
@@ -36,13 +33,12 @@ import pub.devrel.easypermissions.EasyPermissions
 import java.util.*
 import com.timmy.mapmetropia.base.BaseFragment
 import com.timmy.mapmetropia.base.BaseRecyclerViewDataBindingAdapter
-import com.timmy.mapmetropia.databinding.AdapterBottomJourneyBinding
+import com.timmy.mapmetropia.databinding.AdapterBottomJourneyDetailBinding
 import com.timmy.mapmetropia.databinding.AdapterBottomJourneySummaryBinding
 import com.timmy.mapmetropia.listener.BackListener
 import com.timmy.mapmetropia.model.JourneyData
 import com.timmy.mapmetropia.uitool.*
 import com.timmy.mapmetropia.util.*
-import kotlin.math.roundToInt
 
 class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::inflate), BackListener, OnMapReadyCallback, EasyPermissions.PermissionCallbacks {
 
@@ -126,17 +122,20 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
                 setMarginByDpUnit(0, 0, (calculateDistance * 0.02).toInt(), (calculateDistance * 0.036).toInt())
             }
             val clSummaryHeight = (calculateDistance * 0.05).toInt()
-//            clSummary.setViewSizeByDpUnit(widthPixel, clSummaryHeight) // 不知道為什麼，設定這個會讓裡面的約束失效。
+//            clSummary.setViewSizeByDpUnit(widthPixel, clSummaryHeight) // 不知道為什麼，設定這個會讓Layout裡面的約束失效、內容消失。
             val cardCorner = (calculateDistance * 0.03).toInt()
 
             val clSummaryInBottomHeight = (calculateDistance * 0.031).toInt()
             icBottom.apply {
-//                slContent.setCornerRadius(cardCorner)
+                slContent.setCornerRadius(cardCorner)
                 bottomSheet.maxHeight = (calculateDistance * 0.8).toInt() // 最大高度設置為螢幕高的 約0.8(Zeplin計算結果)
                 vvIosBar.setMarginByDpUnit(0, 4, 0, 0)
                 vvIosBar.background = getRoundBg(mContext, rc, R.color.gray)
 
-                clSummaryInBottom.setViewSizeByDpUnit(widthPixel, clSummaryInBottomHeight)
+                val rvTopBottomMargin = (clSummaryInBottomHeight / 2 - calculateDistance * 0.008).toInt()
+                rvJourneySummary.setMarginByDpUnit(16, rvTopBottomMargin, 16, rvTopBottomMargin)
+//                rvJourneySummary.setViewSizeByDpUnit(widthPixel, clSummaryInBottomHeight) // 不知道為什麼，設定這個會讓裡面的RecyclerView異常，只好改用設定Margin的方式來調整大小。
+
             }
 
             behavior.peekHeight = ViewTool.DpToPx(mContext, ((clSummaryInBottomHeight + clSummaryHeight) * 1.1).toFloat()) // 偷看高度設定 // clSummaryInBottom + clSummary
@@ -169,6 +168,9 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
 //            onBackPressed()
         }
 
+        mBinding.llBuy.setOnClickListener {
+            logi("llBuy", "llBuy 被點擊到了！")
+        }
 
     }
 
@@ -474,7 +476,7 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
 
         val view: View = when (addType) {
             MarkerType.Departure -> LayoutInflater.from(mContext).inflate(R.layout.marker_departure_layout, null).apply {
-                background = getRoundBg(mContext, rc, R.color.theme_blue, R.color.white, 4)
+                background = getRoundBg(mContext, rc, R.color.theme_blue, R.color.white, 5)
                 setViewSizeByDpUnit(30, 30)
             }
             MarkerType.Destination -> LayoutInflater.from(mContext).inflate(R.layout.marker_destination_layout, null).apply {
@@ -526,12 +528,22 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
         mBinding.icBottom.apply {
             //RecyclerView初始化
             rvJourneySummary.apply {
-//                layoutParams = ConstraintLayout.LayoutParams(widthPixel, ConstraintLayout.LayoutParams.WRAP_CONTENT)
-                overScrollMode = View.OVER_SCROLL_NEVER
-                requestDisallowInterceptTouchEvent(true)
+//                setMarginByDpUnit(10, 16, 10, 16)
+//                layoutParams = ConstraintLayout.LayoutParams(widthPixel, heightPixel)
+//                overScrollMode = View.OVER_SCROLL_NEVER
+
+//                layoutManager = LinearLayoutManager(mContext, RecyclerView.HORIZONTAL, false)
+//                requestDisallowInterceptTouchEvent(true)
                 adapter = JourneySummaryAdapter(mContext).apply {
                     addItem(journeyData.steps)
                 }
+            }
+            logi("showBottomView", "rvJourneySummary 的寬高是=>[${rvJourneySummary.layoutParams.width},${rvJourneySummary.layoutParams.height}]")
+
+
+            rvJourneyDetail.apply {
+
+
             }
             setBottomSheetState(BottomSheetBehavior.STATE_COLLAPSED)
         }
@@ -545,7 +557,7 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
             val binding = viewHolder.binding as AdapterBottomJourneySummaryBinding
 //            binding.clContent.background = getRectangleBg(context, 0, 0, 0, 0, R.color.theme_green, 0, 0)
 //            binding.clContent.layoutParams = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT,ConstraintLayout.LayoutParams.WRAP_CONTENT)
-//            binding.ivMode.setViewSizeByDpUnit(32,32)
+            binding.ivMode.setViewSizeByDpUnit(20, 20)
             val cn = 4 //corner
 
 //            binding.tvWalkTime.background = getRectangleBg(context, cn, cn, cn, cn, R.color.transparent, R.color.transparent, 1)
@@ -554,6 +566,8 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
             binding.tvShortNoBus.setTextSize(14)
             binding.tvShortNoTram.background = getRectangleBg(context, cn, cn, cn, cn, R.color.transparent, R.color.theme_red, 1)
             binding.tvShortNoTram.setTextSize(14)
+
+            binding.ivNext.setMarginByDpUnit(6, 0, 6, 0)
         }
 
         override fun onBindViewHolder(viewHolder: ViewHolder, position: Int, data: JourneyData.Step) {
@@ -564,6 +578,7 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
                 .load(data.mode.getIconDrawable())
                 .into(binding.ivMode)
 
+            binding.ivNext.isVisible = position != itemCount - 1// 最後一個的ivNext要隱藏
         }
 
         override fun onItemClick(view: View, position: Int, data: JourneyData.Step): Boolean {
@@ -577,37 +592,31 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
         /**依照dataMode決定顯示什麼*/
         fun AdapterBottomJourneySummaryBinding.setShowText(data: JourneyData.Step, position: Int) {
 
-            this.tvWalkTime.isVisible = true
-            this.tvShortNoBus.isVisible = false
-            this.tvShortNoTram.isVisible = false
+            when (data.mode) {
+                StepMode.Walk.content -> {
+                    this.tvWalkTime.isVisible = true
+                    this.tvShortNoBus.isVisible = false
+                    this.tvShortNoTram.isVisible = false
+//                    logi("setShowText", "這筆data的mode是=>${data.mode},花費時間是=>${data.estimatedTime},路徑編號是=>${data.shortNameNo}")
+                    this.tvWalkTime.text = ((data.estimatedTime.toDouble() / 60).format("#")).toString()
+                    logi("setShowText", " (data.estimatedTime.toDouble() / 60) 計算值是 =>${(data.estimatedTime.toDouble() / 60)}")
+                    logi("setShowText", " this.tvWalkTime.text  設定完成後是 =>${this.tvWalkTime.text}")
 
-            this.tvWalkTime.text = position.toString()
+                }
+                StepMode.Bus.content -> {
+                    this.tvWalkTime.isVisible = false
+                    this.tvShortNoBus.isVisible = true
+                    this.tvShortNoTram.isVisible = false
+                    this.tvShortNoBus.text = data.shortNameNo
+                }
+                StepMode.Tram.content -> {
+                    this.tvWalkTime.isVisible = false
+                    this.tvShortNoBus.isVisible = false
+                    this.tvShortNoTram.isVisible = true
+                    this.tvShortNoTram.text = data.shortNameNo
 
-//            when (data.mode) {
-//                StepMode.Walk.content -> {
-//                    this.tvWalkTime.isVisible = true
-//                    this.tvShortNoBus.isVisible = false
-//                    this.tvShortNoTram.isVisible = false
-////                    logi("setShowText", "這筆data的mode是=>${data.mode},花費時間是=>${data.estimatedTime},路徑編號是=>${data.shortNameNo}")
-//                    this.tvWalkTime.text =( (data.estimatedTime.toDouble() / 60).format("#") ).toString()
-//                    logi("setShowText", " (data.estimatedTime.toDouble() / 60) 計算值是 =>${ (data.estimatedTime.toDouble() / 60) }")
-//                    logi("setShowText", " this.tvWalkTime.text  設定完成後是 =>${ this.tvWalkTime.text }")
-//
-//                }
-//                StepMode.Bus.content -> {
-//                    this.tvWalkTime.isVisible = false
-//                    this.tvShortNoBus.isVisible = true
-//                    this.tvShortNoTram.isVisible = false
-//                    this.tvShortNoBus.text = data.shortNameNo
-//                }
-//                StepMode.Tram.content -> {
-//                    this.tvWalkTime.isVisible = false
-//                    this.tvShortNoBus.isVisible = false
-//                    this.tvShortNoTram.isVisible = true
-//                    this.tvShortNoTram.text = data.shortNameNo
-//
-//                }
-//            }
+                }
+            }
 
         }
 
@@ -629,14 +638,14 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
 
     /** 底部視圖的詳細行程的 Adapter */
     class JourneyDetailAdapter(val context: Context) :
-        BaseRecyclerViewDataBindingAdapter<JourneyData.Step>(context, R.layout.adapter_bottom_journey) {
+        BaseRecyclerViewDataBindingAdapter<JourneyData.Step>(context, R.layout.adapter_bottom_journey_detail) {
         override fun initViewHolder(viewHolder: ViewHolder) {
-            val binding = viewHolder.binding as AdapterBottomJourneyBinding
+            val binding = viewHolder.binding as AdapterBottomJourneyDetailBinding
 
         }
 
         override fun onBindViewHolder(viewHolder: ViewHolder, position: Int, data: JourneyData.Step) {
-            val binding = viewHolder.binding as AdapterBottomJourneyBinding
+            val binding = viewHolder.binding as AdapterBottomJourneyDetailBinding
         }
 
         override fun onItemClick(view: View, position: Int, data: JourneyData.Step): Boolean {
