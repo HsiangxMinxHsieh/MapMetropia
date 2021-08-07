@@ -3,12 +3,9 @@ package com.timmy.mapmetropia.base
 import android.content.Context
 import androidx.databinding.DataBindingUtil
 import androidx.databinding.ViewDataBinding
-import androidx.recyclerview.widget.RecyclerView
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Filter
-import android.widget.Filterable
 import kotlin.collections.ArrayList
 
 
@@ -19,11 +16,6 @@ abstract class BaseRecyclerViewDataBindingAdapter<T>(private val context: Contex
 
      private val myInflater: LayoutInflater? = null
      private var sortKey: String? = null
-
-     /**
-      * 搜尋過的list
-      */
-     private var filteredList = mutableListOf<T>()
 
      /**
       * 初始化 ViewHolder
@@ -75,17 +67,17 @@ abstract class BaseRecyclerViewDataBindingAdapter<T>(private val context: Contex
           viewHolder.binding.root.tag = position
           val viewType = viewHolder.itemViewType
 
-          val data = filteredList[position]
+          val data = list[position]
 
           onBindViewHolder(viewHolder , position , data)
      }
 
      override fun getItemCount(): Int {
-          return filteredList.size
+          return list.size
      }
 
      fun getItem(position: Int): T {
-          return filteredList[position]
+          return list[position]
      }
 
      fun addItem(list: List<T>) {

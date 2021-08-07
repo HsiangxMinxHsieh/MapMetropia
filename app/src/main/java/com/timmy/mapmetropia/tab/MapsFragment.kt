@@ -12,7 +12,12 @@ import android.location.LocationListener
 import android.location.LocationManager
 import android.os.Bundle
 import android.view.*
+import android.widget.LinearLayout
 import android.widget.Toast
+import androidx.constraintlayout.widget.ConstraintLayout
+import androidx.core.view.ViewCompat.setOverScrollMode
+import androidx.core.view.isVisible
+import com.bumptech.glide.Glide
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
 import com.google.android.gms.maps.CameraUpdateFactory
@@ -37,6 +42,7 @@ import com.timmy.mapmetropia.listener.BackListener
 import com.timmy.mapmetropia.model.JourneyData
 import com.timmy.mapmetropia.uitool.*
 import com.timmy.mapmetropia.util.*
+import kotlin.math.roundToInt
 
 class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::inflate), BackListener, OnMapReadyCallback, EasyPermissions.PermissionCallbacks {
 
@@ -125,7 +131,7 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
 
             val clSummaryInBottomHeight = (calculateDistance * 0.031).toInt()
             icBottom.apply {
-                slContent.setCornerRadius(cardCorner)
+//                slContent.setCornerRadius(cardCorner)
                 bottomSheet.maxHeight = (calculateDistance * 0.8).toInt() // 最大高度設置為螢幕高的 約0.8(Zeplin計算結果)
                 vvIosBar.setMarginByDpUnit(0, 4, 0, 0)
                 vvIosBar.background = getRoundBg(mContext, rc, R.color.gray)
@@ -172,10 +178,10 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
 
     private fun initValue() { //填值進畫面
         mBinding.apply {
-            tvTotalSpendTime.text =mContext.getString(R.string.total_spend_time).format(journeyData.estimatedTime)
+            tvTotalSpendTime.text = mContext.getString(R.string.total_spend_time).format(journeyData.estimatedTime)
             tvTotalSpendMoneyButton.text = mContext.getString(R.string.total_price).format(journeyData.totalPrice.format("#.00"))
-            tvStartTime.text =journeyData.startedOn.toTimeInclude12hour()
-            tvEndTime.text =journeyData.endedOn.toTimeInclude12hour()
+            tvStartTime.text = journeyData.startedOn.toTimeInclude12hour()
+            tvEndTime.text = journeyData.endedOn.toTimeInclude12hour()
         }
 
         showBottomView(journeyData)
@@ -519,7 +525,14 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
         //設定顯示內容
         mBinding.icBottom.apply {
             //RecyclerView初始化
-
+            rvJourneySummary.apply {
+//                layoutParams = ConstraintLayout.LayoutParams(widthPixel, ConstraintLayout.LayoutParams.WRAP_CONTENT)
+                overScrollMode = View.OVER_SCROLL_NEVER
+                requestDisallowInterceptTouchEvent(true)
+                adapter = JourneySummaryAdapter(mContext).apply {
+                    addItem(journeyData.steps)
+                }
+            }
             setBottomSheetState(BottomSheetBehavior.STATE_COLLAPSED)
         }
 
@@ -530,10 +543,27 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
         BaseRecyclerViewDataBindingAdapter<JourneyData.Step>(context, R.layout.adapter_bottom_journey_summary) {
         override fun initViewHolder(viewHolder: ViewHolder) {
             val binding = viewHolder.binding as AdapterBottomJourneySummaryBinding
+//            binding.clContent.background = getRectangleBg(context, 0, 0, 0, 0, R.color.theme_green, 0, 0)
+//            binding.clContent.layoutParams = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT,ConstraintLayout.LayoutParams.WRAP_CONTENT)
+//            binding.ivMode.setViewSizeByDpUnit(32,32)
+            val cn = 4 //corner
+
+//            binding.tvWalkTime.background = getRectangleBg(context, cn, cn, cn, cn, R.color.transparent, R.color.transparent, 1)
+            binding.tvWalkTime.setTextSize(14)
+            binding.tvShortNoBus.background = getRectangleBg(context, cn, cn, cn, cn, R.color.transparent, R.color.theme_blue, 1)
+            binding.tvShortNoBus.setTextSize(14)
+            binding.tvShortNoTram.background = getRectangleBg(context, cn, cn, cn, cn, R.color.transparent, R.color.theme_red, 1)
+            binding.tvShortNoTram.setTextSize(14)
         }
 
         override fun onBindViewHolder(viewHolder: ViewHolder, position: Int, data: JourneyData.Step) {
             val binding = viewHolder.binding as AdapterBottomJourneySummaryBinding
+
+            binding.setShowText(data, position)
+            Glide.with(context)
+                .load(data.mode.getIconDrawable())
+                .into(binding.ivMode)
+
         }
 
         override fun onItemClick(view: View, position: Int, data: JourneyData.Step): Boolean {
@@ -543,10 +573,62 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
         override fun onItemLongClick(view: View, position: Int, data: JourneyData.Step): Boolean {
             return false
         }
+
+        /**依照dataMode決定顯示什麼*/
+        fun AdapterBottomJourneySummaryBinding.setShowText(data: JourneyData.Step, position: Int) {
+
+            this.tvWalkTime.isVisible = true
+            this.tvShortNoBus.isVisible = false
+            this.tvShortNoTram.isVisible = false
+
+            this.tvWalkTime.text = position.toString()
+
+//            when (data.mode) {
+//                StepMode.Walk.content -> {
+//                    this.tvWalkTime.isVisible = true
+//                    this.tvShortNoBus.isVisible = false
+//                    this.tvShortNoTram.isVisible = false
+////                    logi("setShowText", "這筆data的mode是=>${data.mode},花費時間是=>${data.estimatedTime},路徑編號是=>${data.shortNameNo}")
+//                    this.tvWalkTime.text =( (data.estimatedTime.toDouble() / 60).format("#") ).toString()
+//                    logi("setShowText", " (data.estimatedTime.toDouble() / 60) 計算值是 =>${ (data.estimatedTime.toDouble() / 60) }")
+//                    logi("setShowText", " this.tvWalkTime.text  設定完成後是 =>${ this.tvWalkTime.text }")
+//
+//                }
+//                StepMode.Bus.content -> {
+//                    this.tvWalkTime.isVisible = false
+//                    this.tvShortNoBus.isVisible = true
+//                    this.tvShortNoTram.isVisible = false
+//                    this.tvShortNoBus.text = data.shortNameNo
+//                }
+//                StepMode.Tram.content -> {
+//                    this.tvWalkTime.isVisible = false
+//                    this.tvShortNoBus.isVisible = false
+//                    this.tvShortNoTram.isVisible = true
+//                    this.tvShortNoTram.text = data.shortNameNo
+//
+//                }
+//            }
+
+        }
+
+        fun String.getIconDrawable() = when (this) {
+            StepMode.Walk.content -> R.drawable.ic_icon_mode_walk
+            StepMode.Bus.content -> R.drawable.ic_icon_mode_bus
+            StepMode.Tram.content -> R.drawable.ic_icon_mode_tram
+            else -> 0
+        }
+    }
+
+    enum class StepMode(val content: String) {
+        Walk("walk"),
+        Bus("bus"),
+        Tram("tram"),
+
+
     }
 
     /** 底部視圖的詳細行程的 Adapter */
-    class JourneyAdapter(val context: Context) :
+    class JourneyDetailAdapter(val context: Context) :
         BaseRecyclerViewDataBindingAdapter<JourneyData.Step>(context, R.layout.adapter_bottom_journey) {
         override fun initViewHolder(viewHolder: ViewHolder) {
             val binding = viewHolder.binding as AdapterBottomJourneyBinding
