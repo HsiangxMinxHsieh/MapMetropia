@@ -14,6 +14,8 @@ import android.os.Bundle
 import android.view.*
 import android.widget.Toast
 import androidx.core.view.isVisible
+import androidx.databinding.ViewDataBinding
+import androidx.viewbinding.ViewBinding
 import com.bumptech.glide.Glide
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -72,39 +74,17 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
 
         initEvent()
 
-//        initScreenSatus()
     }
 
 
     lateinit var journeyData: JourneyData
     private fun initData() { // 初始化所有資料，此為讀入raw的Json檔
         val journeyDataStr = getRaw(mContext, R.raw.transit_data)
-//        logi("initData", "初始化資料時，journeyDataStr 是=>${journeyDataStr}")
 
         journeyData = journeyDataStr.toGson(JourneyData())
 
         logi("initData", "journeyData轉換完成，是=>${journeyData.toJson()}")
 
-
-    }
-
-
-    /**因為Google地圖內沒有方法取得現在方位(iOS卻有...Orz)，因此要設定Sensor使用*/
-    private fun initSensor() {
-        val mSensorManager: SensorManager = mContext.getSystemService(Context.SENSOR_SERVICE) as SensorManager
-        val accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
-        val magnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
-        mSensorManager.registerListener(sensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_UI)
-        mSensorManager.registerListener(sensorEventListener, magnetometer, SensorManager.SENSOR_DELAY_UI)
-
-        //延遲更新操作(避免抖動的太劇烈)
-        val timeInterval = 1000L
-        otherHandler.postDelayed(object : Runnable {
-            override fun run() {
-                isTimeToUpdate = true
-                otherHandler.postDelayed(this, timeInterval)
-            }
-        }, timeInterval)
     }
 
     private fun initView() {
@@ -133,9 +113,13 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
                 vvIosBar.background = getRoundBg(mContext, rc, R.color.gray)
 
                 val rvTopBottomMargin = (clSummaryInBottomHeight / 2 - calculateDistance * 0.008).toInt()
-                rvJourneySummary.setMarginByDpUnit(16, rvTopBottomMargin, 16, rvTopBottomMargin)
+                rvJourneySummary.setMarginByDpUnit(15, rvTopBottomMargin, 15, rvTopBottomMargin)
 //                rvJourneySummary.setViewSizeByDpUnit(widthPixel, clSummaryInBottomHeight) // 不知道為什麼，設定這個會讓裡面的RecyclerView異常，只好改用設定Margin的方式來調整大小。
-
+                rvJourneyDetail.apply {
+                    setViewSize(widthPixel-100 , calculateDistance.testViewSize(0.95).toInt()) // 一定要設定寬高才可以滾動(不要問我為什麼，我只能說是之前的經驗...Orz)
+                    setMarginByDpUnit(15, 0, 15, 0)
+                    setPaddingByDpUnit(0,0,0,(calculateDistance * 0.02).toInt())
+                }
             }
 
             behavior.peekHeight = ViewTool.DpToPx(mContext, ((clSummaryInBottomHeight + clSummaryHeight) * 1.1).toFloat()) // 偷看高度設定 // clSummaryInBottom + clSummary
@@ -155,6 +139,48 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
         initScreenStatus()
     }
 
+    private fun initValue() { //填值進畫面
+        mBinding.apply {
+            tvTotalSpendTime.text = mContext.getString(R.string.total_spend_time).format(journeyData.estimatedTime)
+            tvTotalSpendMoneyButton.text = mContext.getString(R.string.total_price).format(journeyData.totalPrice.format("#.00"))
+            tvStartTime.text = journeyData.startedOn.toTimeInclude12hour()
+            tvEndTime.text = journeyData.endedOn.toTimeInclude12hour()
+        }
+
+        showBottomView(journeyData)
+    }
+
+    /**因為Google地圖內沒有方法取得現在方位(iOS卻有...Orz)，因此要設定Sensor使用*/
+    private fun initSensor() {
+        val mSensorManager: SensorManager = mContext.getSystemService(Context.SENSOR_SERVICE) as SensorManager
+        val accelerometer = mSensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
+        val magnetometer = mSensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD)
+        mSensorManager.registerListener(sensorEventListener, accelerometer, SensorManager.SENSOR_DELAY_UI)
+        mSensorManager.registerListener(sensorEventListener, magnetometer, SensorManager.SENSOR_DELAY_UI)
+
+        //延遲更新操作(避免抖動的太劇烈)
+        val timeInterval = 1000L
+        otherHandler.postDelayed(object : Runnable {
+            override fun run() {
+                isTimeToUpdate = true
+                otherHandler.postDelayed(this, timeInterval)
+            }
+        }, timeInterval)
+    }
+
+    private fun initMap() {
+        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+//        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
+        if (this::mMap.isInitialized)
+            return
+
+        val mapFragment = SupportMapFragment.newInstance()
+        mapFragment.getMapAsync(this@MapsFragment)
+        childFragmentManager.beginTransaction().replace(R.id.map, mapFragment).commit()
+        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext)
+    }
+
+    @SuppressLint("ClickableViewAccessibility")
     private fun initEvent() {
 
         mBinding.ivAnchor.setOnClickListener {// 定位到本機位置
@@ -175,31 +201,9 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
     }
 
     private fun initScreenStatus() {
-        setBottomSheetState(BottomSheetBehavior.STATE_COLLAPSED)
-    }
+//        setBottomSheetState(BottomSheetBehavior.STATE_COLLAPSED)
 
-    private fun initValue() { //填值進畫面
-        mBinding.apply {
-            tvTotalSpendTime.text = mContext.getString(R.string.total_spend_time).format(journeyData.estimatedTime)
-            tvTotalSpendMoneyButton.text = mContext.getString(R.string.total_price).format(journeyData.totalPrice.format("#.00"))
-            tvStartTime.text = journeyData.startedOn.toTimeInclude12hour()
-            tvEndTime.text = journeyData.endedOn.toTimeInclude12hour()
-        }
-
-        showBottomView(journeyData)
-    }
-
-
-    private fun initMap() {
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
-//        val mapFragment = childFragmentManager.findFragmentById(R.id.map) as SupportMapFragment
-        if (this::mMap.isInitialized)
-            return
-
-        val mapFragment = SupportMapFragment.newInstance()
-        mapFragment.getMapAsync(this@MapsFragment)
-        childFragmentManager.beginTransaction().replace(R.id.map, mapFragment).commit()
-        mFusedLocationClient = LocationServices.getFusedLocationProviderClient(mContext)
+        setBottomSheetState(BottomSheetBehavior.STATE_EXPANDED) // 調整畫面中
     }
 
     override fun onBackPressed(): Boolean {
@@ -526,24 +530,31 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
 
         //設定顯示內容
         mBinding.icBottom.apply {
+
             //RecyclerView初始化
             rvJourneySummary.apply {
-//                setMarginByDpUnit(10, 16, 10, 16)
-//                layoutParams = ConstraintLayout.LayoutParams(widthPixel, heightPixel)
-//                overScrollMode = View.OVER_SCROLL_NEVER
-
-//                layoutManager = LinearLayoutManager(mContext, RecyclerView.HORIZONTAL, false)
-//                requestDisallowInterceptTouchEvent(true)
                 adapter = JourneySummaryAdapter(mContext).apply {
                     addItem(journeyData.steps)
                 }
             }
             logi("showBottomView", "rvJourneySummary 的寬高是=>[${rvJourneySummary.layoutParams.width},${rvJourneySummary.layoutParams.height}]")
 
+            //遮蔽Behavior事件，讓使用者點到RecyclerView可以滑動
+            //不知道為什麼，不能把這個觸摸事件直接設定到RecyclerView上面。
+            vvScrollTouch.setOnTouchListener { v, event ->
+                rvJourneyDetail.requestDisallowInterceptTouchEvent(true)
+                false
+            }
 
             rvJourneyDetail.apply {
+                isNestedScrollingEnabled = true
 
-
+                adapter = JourneyDetailAdapter(mContext).apply {
+                    val list = journeyData.steps.toMutableList() // 因為顯示上要比實際資料多兩筆，所以要在頭尾多加兩筆資料進去。
+                    list.add(0, list[0])
+                    list.add(list.last())
+                    addItem(list)
+                }
             }
             setBottomSheetState(BottomSheetBehavior.STATE_COLLAPSED)
         }
@@ -632,24 +643,91 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
         Walk("walk"),
         Bus("bus"),
         Tram("tram"),
-
-
     }
 
     /** 底部視圖的詳細行程的 Adapter */
     class JourneyDetailAdapter(val context: Context) :
         BaseRecyclerViewDataBindingAdapter<JourneyData.Step>(context, R.layout.adapter_bottom_journey_detail) {
+
         override fun initViewHolder(viewHolder: ViewHolder) {
             val binding = viewHolder.binding as AdapterBottomJourneyDetailBinding
-
+            binding.icDeparture.ivTitle.background = getRoundBg(context, 50, R.color.theme_blue, 0, 0)
+//            binding.icWalk.ivTitle.setViewSize(100,1000)
+//            binding.icDestination.ivTitle.background = getRoundBg(context, 50, R.color.theme_blue, 0, 0)
         }
 
         override fun onBindViewHolder(viewHolder: ViewHolder, position: Int, data: JourneyData.Step) {
             val binding = viewHolder.binding as AdapterBottomJourneyDetailBinding
+            // IncludeLayoutArray
+            val icArray = arrayOf(binding.icDeparture, binding.icWalk, binding.icBus, binding.icTram, binding.icDestination)
+            hideAllIcInLayout(icArray) // 先把所有IncludeLayout關閉，再根據ItemViewType打開。
+            val type = getItemViewType(position)
+//            logi("onBindViewHolder","position是=>$position 時,type是=>${type}")
+            showBindingByType(type, icArray)
+            //開始疲勞的塞值
+            when (type) {
+                0 -> {// 起點
+                    binding.icDeparture.apply {
+                        tvDepartureName.text = data.destinationName
+                        tvStartTime.text = data.startedOn.toTimeInclude12hour()
+                    }
+                }
+                1 -> { //走路
+                    binding.icWalk.apply {
+                        tvDepartureName.text="走路"
+
+                    }
+                }
+                2 -> { //巴士
+                    binding.icBus.apply {
+
+
+                    }
+                }
+                3 -> { //電車
+                    binding.icTram.apply {
+
+
+                    }
+                }
+                4 -> { // 終點
+                    binding.icDestination.apply {
+                        tvDestinationName.text = data.destinationName
+                        tvEndTime.text = data.endedOn.toTimeInclude12hour()
+                    }
+                }
+            }
+        }
+
+        private fun showBindingByType(type: Int, icArray: Array<ViewDataBinding>) {
+
+            when (type) {
+                0 -> icArray[0].root.isVisible = true
+                1 -> icArray[1].root.isVisible = true
+                2 -> icArray[2].root.isVisible = true
+                3 -> icArray[3].root.isVisible = true
+                4 -> icArray[4].root.isVisible = true
+            }
+        }
+
+        private fun hideAllIcInLayout(layout: Array<ViewDataBinding>) {
+            layout.forEach { it.root.isVisible = false }
+        }
+
+
+        override fun getItemViewType(position: Int): Int {
+            return when {
+                position == 0 -> 0 // 起點
+                position == itemCount - 1 -> 4 // 終點
+                getItemData(position).mode == StepMode.Walk.content -> 1
+                getItemData(position).mode == StepMode.Bus.content -> 2
+                getItemData(position).mode == StepMode.Tram.content -> 3
+                else -> -1
+            } // other
         }
 
         override fun onItemClick(view: View, position: Int, data: JourneyData.Step): Boolean {
-            return false
+            return true
         }
 
         override fun onItemLongClick(view: View, position: Int, data: JourneyData.Step): Boolean {

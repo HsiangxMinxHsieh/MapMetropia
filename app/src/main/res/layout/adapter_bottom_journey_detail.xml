@@ -9,6 +9,29 @@
         android:layout_height="wrap_content"
         android:gravity="center"
        >
+        <include
+            android:id="@+id/ic_departure"
+            layout="@layout/adapter_ic_departure" />
+
+        <include
+            android:id="@+id/ic_walk"
+            layout="@layout/adapter_ic_walk" />
+
+        <include
+            android:id="@+id/ic_bus"
+            layout="@layout/adapter_ic_bus" />
+
+
+        <include
+            android:id="@+id/ic_tram"
+            layout="@layout/adapter_ic_tram" />
+
+
+        <include
+            android:id="@+id/ic_destination"
+            layout="@layout/adapter_ic_destination" />
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </layout>

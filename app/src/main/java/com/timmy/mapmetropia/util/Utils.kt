@@ -17,13 +17,20 @@ import java.time.LocalDateTime
 import java.util.*
 
 
+fun Int.meterToMilesOrFit(): String {
+    return if (this > 643)// x.x 英里 // 題目有 0.4mi，解讀為「如果大於0.4mi要回傳英里，而」
+        "${(this.toDouble() * 0.000621371192).format("#.#")} mi"
+    else // x ft
+        "${(this.toDouble()*3.2808399).format("#")} ft"
+}
+
 fun Double.format(format: String = "#.#"): String {
     return DecimalFormat(format).format(this)
 }
 
 fun Any.toJson() = Gson().toJson(this)
 
-inline fun < reified T>String.toGson(param: T) = Gson().fromJson<T>(this,T::class.java) as T
+inline fun <reified T> String.toGson(param: T) = Gson().fromJson<T>(this, T::class.java) as T
 
 fun getRaw(context: Context, id: Int): String {
     val stream: InputStream = context.resources.openRawResource(id)

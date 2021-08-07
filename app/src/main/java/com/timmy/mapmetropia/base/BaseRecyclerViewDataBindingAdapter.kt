@@ -45,6 +45,8 @@ abstract class BaseRecyclerViewDataBindingAdapter<T>(private val context: Contex
           return super.getItemViewType(position)
      }
 
+     fun getItemData(position: Int) = list[position]
+
      inner class ViewHolder(var binding: ViewDataBinding) : androidx.recyclerview.widget.RecyclerView.ViewHolder(binding.root) {
           init {
                binding.root.setOnClickListener(this@BaseRecyclerViewDataBindingAdapter)
