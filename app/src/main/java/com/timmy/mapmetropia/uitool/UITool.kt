@@ -13,6 +13,15 @@ import android.util.TypedValue
 import android.view.View
 import android.view.ViewGroup
 import android.widget.*
+import com.timmy.mapmetropia.base.staticRatio
+import com.timmy.mapmetropia.util.logi
+
+fun Double.testViewSize(testRatio:Double, TAG:String="testViewSize"):Double{
+    logi("testViewSize","$TAG,ratio=>${testRatio}")
+    logi("testViewSize","$TAG,result=>${this*testRatio}")
+    return this*testRatio
+}
+
 
 /**
  * 設定 壓下的按鈕切換效果(為TRAQ專門製作，產生「背景顏色變換」且「字變色」的效果)

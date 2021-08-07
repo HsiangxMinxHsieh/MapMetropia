@@ -31,14 +31,12 @@ import pub.devrel.easypermissions.EasyPermissions
 import java.util.*
 import com.timmy.mapmetropia.base.BaseFragment
 import com.timmy.mapmetropia.base.BaseRecyclerViewDataBindingAdapter
+import com.timmy.mapmetropia.base.staticRatio
 import com.timmy.mapmetropia.databinding.AdapterBottomJourneyBinding
 import com.timmy.mapmetropia.databinding.AdapterBottomJourneySummaryBinding
 import com.timmy.mapmetropia.listener.BackListener
 import com.timmy.mapmetropia.model.JourneyData
-import com.timmy.mapmetropia.uitool.getRectangleBg
-import com.timmy.mapmetropia.uitool.getRoundBg
-import com.timmy.mapmetropia.uitool.setMarginByDpUnit
-import com.timmy.mapmetropia.uitool.setViewSizeByDpUnit
+import com.timmy.mapmetropia.uitool.*
 import com.timmy.mapmetropia.util.*
 
 class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::inflate), BackListener, OnMapReadyCallback, EasyPermissions.PermissionCallbacks {
@@ -123,39 +121,47 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
     }
 
     private fun initView() {
+        screenRatio //必須於此取一次，staticRatio才會有值
+        val calculateDistance = heightPixel.toDouble() // 公用距離，為高度double值
+        mBinding.apply {
+            ivBack.background = getRoundBg(mContext, rc, R.color.transparent, R.color.theme_blue, 2)
+            ivBack.setViewSizeByDpUnit(36, 36)
+            ivBack.setMarginByDpUnit((calculateDistance * 0.005).toInt(), (calculateDistance * 0.02).toInt(), 0, 0)
 
-        mBinding.ivBack.background = getRoundBg(mContext, rc, R.color.transparent, R.color.theme_blue, 2)
-        mBinding.ivBack.setViewSizeByDpUnit(36, 36)
-        mBinding.ivBack.setMarginByDpUnit(12, 44, 0, 0)
+            ivAnchor.background = getRoundBg(mContext, rc, R.color.white, R.color.gray, 2)
+            ivAnchor.setViewSizeByDpUnit(48, 48)
+            ivAnchor.setMarginByDpUnit(0, 0,  (calculateDistance.testViewSize(0.02, "ivAnchor Margin Bottom Parent")).toInt(), (calculateDistance.testViewSize(0.036, "ivAnchor Margin Bottom Parent")).toInt())
 
-        mBinding.ivAnchor.background = getRoundBg(mContext, rc, R.color.white, R.color.gray, 2)
-        mBinding.ivAnchor.setViewSizeByDpUnit(48, 48)
-        mBinding.ivAnchor.setMarginByDpUnit(0, 0, 18, 180)
+            val clSummaryHeight = (calculateDistance.testViewSize(0.05, "Green clSummary Height")).toInt()
+            clSummary.setViewSizeByDpUnit(widthPixel, clSummaryHeight)
+//            clSummary.isVisible = false
+            val cardCorner = (calculateDistance * 0.03).toInt()
 
-        val cardCorner = 20
-        mBinding.icBottom.bottomSheet.background = getRectangleBg(mContext, cardCorner, cardCorner, 0, 0, R.color.white)
-        mBinding.icBottom.bottomSheet.maxHeight = (heightPixel * 0.857).toInt() //最大高度設置為螢幕的 約0.857(Zeplin計算結果)
+            icBottom.slContent.setCornerRadius(cardCorner)
+            icBottom.bottomSheet.maxHeight = (calculateDistance * 0.8).toInt() // 最大高度設置為螢幕高的 約0.8(Zeplin計算結果)
 
-        mBinding.clSummary.setViewSizeByDpUnit(widthPixel, 113)
+            icBottom.vvIosBar.setMarginByDpUnit(0, 4, 0, 0)
+            icBottom.vvIosBar.background = getRoundBg(mContext, rc, R.color.gray)
+            val clSummaryInBottomHeight = (calculateDistance.testViewSize(0.031, "Blue clSummaryInBottom Height")).toInt()
+            icBottom.clSummaryInBottom.setViewSizeByDpUnit(widthPixel, clSummaryInBottomHeight)
 
-        mBinding.icBottom.vvIosBar.setMarginByDpUnit(0, 4, 0, 0)
-        mBinding.icBottom.vvIosBar.background = getRoundBg(mContext, rc, R.color.gray)
+            behavior.peekHeight = ViewTool.DpToPx(mContext, ((clSummaryInBottomHeight + clSummaryHeight) * 1.1).toFloat()) // 偷看高度設定 // clSummaryInBottom + clSummary
+
+        }
 
         initScreenSatus()
-
 
     }
 
     private fun initEvent() {
 
         mBinding.ivAnchor.setOnClickListener {// 定位到本機位置
-
             zoomToPoint(deviceLocation?.latLng(), true)
 
         }
 
         mBinding.ivBack.setOnClickListener { // 本來返回鍵做成可以離開這這個App，後來覺得沒有案鍵可以回到我精心畫的路徑圖有點可惜，所以現在會回到路徑圖 XD
-
+            initScreenSatus()
             initZoomToPathLocation(true)
 //            onBackPressed()
         }
@@ -403,7 +409,7 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
             builder.include(it)
         }
         val bounds = builder.build()
-        val padding = (heightPixel * 0.12).toInt()
+        val padding = (heightPixel * 0.1).toInt()// 縮放地圖距離邊界
 
         if (needAnimation) {
             mMap.animateCamera(
@@ -470,8 +476,7 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
         mBinding.flSheet.postDelayed({
 
 //            logi(TAG, "現在要設定的狀態是===>$state")
-            val ratio = 0.5
-            behavior.peekHeight = ((widthPixel.toDouble() * ratio) ).toInt()
+
             behavior.state = state
             bottomSheetStatus = state
             firstShowBottom = false
