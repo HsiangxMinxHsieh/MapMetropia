@@ -210,18 +210,13 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
     }
 
     override fun onBackPressed(): Boolean {
-        logi("onBackPressed", "firstShowBottom 是=>$firstShowBottom")
         return when {
-            firstShowBottom -> {
-                false
-            }
-            behavior.state != BottomSheetBehavior.STATE_HIDDEN -> {
-                setBottomSheetState(BottomSheetBehavior.STATE_HIDDEN)
+            behavior.state != BottomSheetBehavior.STATE_COLLAPSED -> {
+                setBottomSheetState(BottomSheetBehavior.STATE_COLLAPSED)
                 true
             }
             else -> {
                 activity?.finish()
-                logi("onBackPressed", "else被呼較 ")
                 false
             }
         }
@@ -330,7 +325,7 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
         super.onResume()
 
         openGPS(locationListener)
-
+        showBottomView(journeyData)
     }
 
     override fun onPause() {
@@ -367,8 +362,8 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
         initZoomToPathLocation()
 
         // 繪製首尾Marker
-        addLocationCustomMarker(journeyData.steps.first().destinationLatLng(), MarkerType.Departure)
-        addLocationCustomMarker(journeyData.steps.last().destinationLatLng(), MarkerType.Destination)
+        val departureMarker = addLocationCustomMarker(journeyData.steps.first().destinationLatLng(), MarkerType.Departure)
+        val destinationMarker = addLocationCustomMarker(journeyData.steps.last().destinationLatLng(), MarkerType.Destination)
 
         drawPathsOnMap(journeyData.steps.map { it.polyline })
 
@@ -376,6 +371,8 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
             if (it == myLocationMark) {
                 return@setOnMarkerClickListener true
             }
+            if (it == departureMarker || it == destinationMarker)
+                setBottomSheetState(BottomSheetBehavior.STATE_EXPANDED)
 
             return@setOnMarkerClickListener true
         }
@@ -510,8 +507,7 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
         }
     }
 
-    var firstShowBottom = true
-    private var bottomSheetStatus = BottomSheetBehavior.STATE_HIDDEN
+    private var bottomSheetStatus = BottomSheetBehavior.STATE_COLLAPSED
 
     private fun setBottomSheetState(state: Int) {
 
@@ -521,7 +517,6 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
 
             behavior.state = state
             bottomSheetStatus = state
-            firstShowBottom = false
 
         }, 300L)
     }
@@ -564,7 +559,9 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
                     }
                 }
             }
-            setBottomSheetState(BottomSheetBehavior.STATE_COLLAPSED)
+            logi("showBottomView", "設定前，此時儲存的bottomSheetStatus是=>${bottomSheetStatus}")
+            setBottomSheetState(bottomSheetStatus)
+
         }
 
     }
@@ -765,7 +762,7 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
                         tvWalkStatus.text = context.getString(R.string.walk_content).format(data.estimateToMin(), data.distance.meterToMilesOrFit())
                         // 設定 preview 點擊事件
                         btnPreviewMaterial.setOnClickListener {
-                            Toast.makeText(context, "第${position}個步驟為走路，走路須走${data.distance.meterToMilesOrFit()}, 耗時${data.estimateToMin()}分鐘。", Toast.LENGTH_SHORT).show()
+                            Toast.makeText(context, "第${position}個步驟為走路，須走${data.distance.meterToMilesOrFit()}, 耗時${data.estimateToMin()}分鐘。", Toast.LENGTH_SHORT).show()
                             listener?.click(data)
 
                         }
