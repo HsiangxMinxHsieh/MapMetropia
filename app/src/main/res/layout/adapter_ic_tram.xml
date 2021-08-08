@@ -146,17 +146,22 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/cl_bus_title" />
 
-            <ImageView
+            <TextView
+                android:id="@+id/iv_ticket"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginTop="8dp"
-                android:src="@drawable/ic_transit_ticket"
+                android:gravity="center"
+                android:text=""
+                android:clickable="true"
+                android:background="@drawable/drawable_ripple"
                 app:layout_constraintBottom_toBottomOf="@+id/vv_anchor_content_bottom"
                 app:layout_constraintDimensionRatio="1"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHeight_percent="0.25"
+                app:layout_constraintHeight_percent="0.26"
                 app:layout_constraintTop_toBottomOf="@+id/cl_bus_title"
-                app:layout_constraintVertical_bias="0.3" />
+                app:layout_constraintVertical_bias="0.3"
+                />
 
             <TextView
                 android:id="@+id/tv_arrving_status"

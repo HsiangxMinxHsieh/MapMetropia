@@ -75,20 +75,35 @@
 
             <TextView
                 android:id="@+id/tv_walk_status"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:text="Walking 8 min (0.4 mi)"
                 android:textColor="@color/txt_dark"
                 android:textStyle="normal"
+                app:layout_constraintHorizontal_bias="0"
+                app:layout_constraintEnd_toStartOf="@+id/btn_preview"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_preview_material"
+                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                app:backgroundTint="@color/btn_back_gray"
+                app:cornerRadius="4dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintDimensionRatio="2.16"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.3"
+                app:rippleColor="@color/txt_dark" />
 
             <TextView
                 android:id="@+id/btn_preview"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:background="@color/btn_back_gray"
                 android:gravity="center"
                 android:text="Preview"
                 android:textColor="@color/txt_dark"

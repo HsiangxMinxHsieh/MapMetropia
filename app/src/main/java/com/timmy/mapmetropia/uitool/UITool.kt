@@ -40,24 +40,24 @@ fun Double.testViewSize(testRatio: Double, TAG: String = "testViewSize"): Double
  * @author 蝦米
  * @date 2019/11/07
  */
-fun Button.setDefaultBackgroundAndTouchListener(
-    unPressTextColor: Int,
-    pressTextColor: Int,
-    unPressBackgroundColor: Int,
-    pressBackgroundColor: Int,
-    unpressedBorderColor: Int = pressBackgroundColor,
-    pressedBorderColor: Int = unPressBackgroundColor
-) {
-    val corner = this.context.resources.getDimensionPixelSize(com.timmy.mapmetropia.R.dimen.dialog_button_corner)        //圓角弧度
-    //按鈕設定參數：
-//    val btnTextSize = context.resources.getDimensionPixelSize(com.smartq.smartcube.R.dimen.btn_text_size) //按鍵文字大小
-    val strokeWidth = context.resources.getDimensionPixelSize(com.timmy.mapmetropia.R.dimen.btn_stroke_width) //按鈕邊界寬度
-    setPressedBackground(
-        getRectangleBg(context, corner, corner, corner, corner, unPressBackgroundColor, unpressedBorderColor, strokeWidth),
-        getRectangleBg(context, corner, corner, corner, corner, pressBackgroundColor, pressedBorderColor, strokeWidth)
-    )
-    setPressedTextColor(unPressTextColor, pressTextColor)
-}
+//fun Button.setDefaultBackgroundAndTouchListener(
+//    unPressTextColor: Int,
+//    pressTextColor: Int,
+//    unPressBackgroundColor: Int,
+//    pressBackgroundColor: Int,
+//    unpressedBorderColor: Int = pressBackgroundColor,
+//    pressedBorderColor: Int = unPressBackgroundColor
+//) {
+//    val corner = this.context.resources.getDimensionPixelSize(com.timmy.mapmetropia.R.dimen.dialog_button_corner)        //圓角弧度
+//    //按鈕設定參數：
+////    val btnTextSize = context.resources.getDimensionPixelSize(com.smartq.smartcube.R.dimen.btn_text_size) //按鍵文字大小
+//    val strokeWidth = context.resources.getDimensionPixelSize(com.timmy.mapmetropia.R.dimen.btn_stroke_width) //按鈕邊界寬度
+//    setPressedBackground(
+//        getRectangleBg(context, corner, corner, corner, corner, unPressBackgroundColor, unpressedBorderColor, strokeWidth),
+//        getRectangleBg(context, corner, corner, corner, corner, pressBackgroundColor, pressedBorderColor, strokeWidth)
+//    )
+//    setPressedTextColor(unPressTextColor, pressTextColor)
+//}
 
 /**
  * 設定 view的長寬 單位為畫素(pixel)

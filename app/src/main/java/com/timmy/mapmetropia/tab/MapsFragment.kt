@@ -15,7 +15,6 @@ import android.view.*
 import android.widget.Toast
 import androidx.core.view.isVisible
 import androidx.databinding.ViewDataBinding
-import androidx.viewbinding.ViewBinding
 import com.bumptech.glide.Glide
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationServices
@@ -124,14 +123,14 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
             behavior.peekHeight = ViewTool.DpToPx(mContext, ((clSummaryInBottomHeight + clSummaryHeight) * 1.1).toFloat()) // 偷看高度設定 // clSummaryInBottom + clSummary
 
             val cn = 10 //corner
-            llBuy.background = getRoundBg(mContext, cn, R.color.light_green)
-            llStartTrip.background = getRoundBg(mContext, cn, R.color.theme_blue)
+//            btnBuyTicket.background = getRoundBg(mContext, cn, R.color.light_green)
+//            btnStartButton.background = getRoundBg(mContext, cn, R.color.theme_blue)
 
             tvTotalSpendTime.setTextSize(17)
-            tvTotalSpendMoneyButton.setTextSize(16)
             tvStartTime.setTextSize(14)
             tvEndTime.setTextSize(14)
-            tvStartButton.setTextSize(16)
+            tvBuy.setTextSize(16)
+            btnStartTrip.setTextSize(16)
 
         }
 
@@ -141,7 +140,7 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
     private fun initValue() { //填值進畫面
         mBinding.apply {
             tvTotalSpendTime.text = mContext.getString(R.string.total_spend_time).format(journeyData.estimatedTime)
-            tvTotalSpendMoneyButton.text = mContext.getString(R.string.total_price).format(journeyData.totalPrice.format("#.00"))
+            tvBuy.text = mContext.getString(R.string.total_price).format(journeyData.totalPrice.format("#.00"))
             tvStartTime.text = journeyData.startedOn.toTimeInclude12hour()
             tvEndTime.text = journeyData.endedOn.toTimeInclude12hour()
         }
@@ -193,8 +192,13 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
 //            onBackPressed()
         }
 
-        mBinding.llBuy.setOnClickListener {
-            logi("llBuy", "llBuy 被點擊到了！")
+        mBinding.btnBuyMaterial.setOnClickListener {
+            Toast.makeText(context, "你點擊到購買車票了！", Toast.LENGTH_SHORT).show()
+        }
+
+        mBinding.btnStartTripMaterial.setOnClickListener {
+            Toast.makeText(context, "你點擊到出發你的旅程了！", Toast.LENGTH_SHORT).show()
+
         }
 
     }
@@ -552,6 +556,12 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
                     list.add(0, list[0])
                     list.add(list.last())
                     addItem(list)
+
+                    listener = object : JourneyDetailAdapter.ClickListener {
+                        override fun click(data: JourneyData.Step) {
+                            setBottomSheetState(BottomSheetBehavior.STATE_COLLAPSED)
+                        }
+                    }
                 }
             }
             setBottomSheetState(BottomSheetBehavior.STATE_COLLAPSED)
@@ -644,7 +654,15 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
     /** 底部視圖的詳細行程的 Adapter */
     class JourneyDetailAdapter(val context: Context) :
         BaseRecyclerViewDataBindingAdapter<JourneyData.Step>(context, R.layout.adapter_bottom_journey_detail) {
-        val heightPixel by lazy { context.resources.displayMetrics.heightPixels }
+
+        private val heightPixel by lazy { context.resources.displayMetrics.heightPixels }
+
+        interface ClickListener {
+            fun click(data: JourneyData.Step)
+        }
+
+        var listener: ClickListener? = null
+
         override fun initViewHolder(viewHolder: ViewHolder) {
             val binding = viewHolder.binding as AdapterBottomJourneyDetailBinding
             //初始化各include視圖
@@ -663,8 +681,8 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
                 vvGrayPoint2.background = getRoundBg(context, cn, R.color.gray_point)
                 tvWalkStatus.setTextSize(14)
                 btnPreview.apply {
-                    background = getRoundBg(context, 7, R.color.btn_back_gray)
-                    setTextSize(14)
+//                    background = getRoundBg(context, 7, R.color.btn_back_gray)
+                    setTextSize(13)
                 }
             }
             binding.icBus.apply {
@@ -745,7 +763,12 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
                     binding.icWalk.apply {
 //                        val duration = (data.endedOn-data.startedOn)
                         tvWalkStatus.text = context.getString(R.string.walk_content).format(data.estimateToMin(), data.distance.meterToMilesOrFit())
+                        // 設定 preview 點擊事件
+                        btnPreviewMaterial.setOnClickListener {
+                            Toast.makeText(context, "第${position}個步驟為走路，走路須走${data.distance.meterToMilesOrFit()}, 耗時${data.estimateToMin()}分鐘。", Toast.LENGTH_SHORT).show()
+                            listener?.click(data)
 
+                        }
                     }
                 }
                 2 -> { //巴士
@@ -756,7 +779,12 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
                         tvArrvingStatus.text = data.arrive.getArriveTime()
                         tvEndTime.text = data.endedOn.toTimeInclude12hour()
                         tvBusNo.text = data.shortNameNo
+                        ivTicket.setOnClickListener {
+                            Toast.makeText(context, "第${position}個步驟為搭公車，需花費${data.price}美金, 耗時${data.estimateToMin()}分鐘。", Toast.LENGTH_SHORT).show()
+                            listener?.click(data)
+                        }
                     }
+
                 }
                 3 -> { //電車
                     binding.icTram.apply {
@@ -766,7 +794,10 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
                         tvArrvingStatus.text = data.arrive.getArriveTime()
                         tvEndTime.text = data.endedOn.toTimeInclude12hour()
                         tvTramNo.text = data.shortNameNo
-
+                        ivTicket.setOnClickListener {
+                            Toast.makeText(context, "第${position}個步驟搭電車，需花費${data.price}美金, 耗時${data.estimateToMin()}分鐘。", Toast.LENGTH_SHORT).show()
+                            listener?.click(data)
+                        }
                     }
                 }
                 4 -> { // 終點
@@ -776,10 +807,12 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
                     }
                 }
             }
+
         }
 
         /**取得跟系統時間的差距，回傳 Arriving (小於3分鐘) 或 Arrive in X min*/
-        private fun Int.getArriveTime(): String {
+        private fun Int.getArriveTime()
+                : String {
             val calculateTime = this.toLong() * DateTool.oneSec //依毫秒來計算較為準確。
 
             val interval = (calculateTime - Date().time) / DateTool.oneMin
@@ -790,7 +823,9 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
             }
         }
 
-        private fun showBindingByType(type: Int, icArray: Array<ViewDataBinding>) {
+        private fun showBindingByType(
+            type: Int, icArray: Array<ViewDataBinding>
+        ) {
 
             when (type) {
                 0 -> icArray[0].root.isVisible = true
@@ -801,12 +836,15 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
             }
         }
 
-        private fun hideAllIcInLayout(layout: Array<ViewDataBinding>) {
+        private fun hideAllIcInLayout(
+            layout: Array<ViewDataBinding>
+        ) {
             layout.forEach { it.root.isVisible = false }
         }
 
 
-        override fun getItemViewType(position: Int): Int {
+        override fun getItemViewType(position: Int)
+                : Int {
             return when {
                 position == 0 -> 0 // 起點
                 position == itemCount - 1 -> 4 // 終點
@@ -817,11 +855,17 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
             } // other
         }
 
-        override fun onItemClick(view: View, position: Int, data: JourneyData.Step): Boolean {
+        override fun onItemClick(
+            view: View, position: Int, data: JourneyData.Step
+        )
+                : Boolean {
             return true
         }
 
-        override fun onItemLongClick(view: View, position: Int, data: JourneyData.Step): Boolean {
+        override fun onItemLongClick(
+            view: View, position: Int, data: JourneyData.Step
+        )
+                : Boolean {
             return false
         }
 

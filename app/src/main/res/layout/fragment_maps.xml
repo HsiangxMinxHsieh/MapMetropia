@@ -94,13 +94,14 @@
 
             <LinearLayout
                 android:id="@+id/ll_spend_total_time"
-                android:layout_width="wrap_content"
+                android:gravity="start"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintBottom_toTopOf="@+id/ll_buy"
+                app:layout_constraintBottom_toTopOf="@+id/btn_buy_material"
                 app:layout_constraintEnd_toStartOf="@+id/vv_divider_anchor"
                 app:layout_constraintHorizontal_bias="0"
-                app:layout_constraintStart_toStartOf="@+id/ll_buy"
+                app:layout_constraintStart_toStartOf="@+id/btn_buy_material"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
@@ -115,11 +116,9 @@
 
             <LinearLayout
                 android:id="@+id/ll_buy"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginStart="15dp"
-                android:background="@color/light_green"
                 android:gravity="center"
                 android:orientation="horizontal"
                 app:layout_constraintBottom_toBottomOf="parent"
@@ -138,7 +137,7 @@
                     android:src="@drawable/ic_transit_ticket" />
 
                 <TextView
-                    android:id="@+id/tv_total_spend_money_button"
+                    android:id="@+id/tv_buy"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
@@ -146,9 +145,29 @@
                     android:textColor="@color/theme_green"
                     android:textStyle="bold" />
 
-
             </LinearLayout>
-
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_buy_material"
+                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginStart="15dp"
+                android:lines="1"
+                android:maxLines="1"
+                android:textAllCaps="false"
+                android:textColor="@color/theme_green"
+                android:textStyle="bold"
+                app:backgroundTint="@color/light_green"
+                app:cornerRadius="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="2.7"
+                app:layout_constraintEnd_toStartOf="@+id/vv_divider_anchor"
+                app:layout_constraintHorizontal_bias="0.5"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.63157"
+                app:layout_constraintWidth_percent="0.43733"
+                app:rippleColor="@color/theme_green" />
             <View
                 android:id="@+id/vv_divider_anchor"
                 android:layout_width="1dp"
@@ -160,15 +179,15 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <LinearLayout
+                android:gravity="end"
                 android:id="@+id/ll_journey_time"
-                style="@style/Widget.MaterialComponents.Button.TextButton"
-                android:layout_width="wrap_content"
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
-                app:layout_constraintBottom_toTopOf="@+id/ll_buy"
-                app:layout_constraintEnd_toEndOf="@+id/ll_start_trip"
+                app:layout_constraintBottom_toTopOf="@+id/btn_start_trip_material"
+                app:layout_constraintEnd_toEndOf="@+id/btn_start_trip"
                 app:layout_constraintHorizontal_bias="1"
-                app:layout_constraintStart_toEndOf="@+id/ll_buy"
+                app:layout_constraintStart_toEndOf="@+id/vv_divider_anchor"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
@@ -196,31 +215,46 @@
                     android:textStyle="bold" />
             </LinearLayout>
 
-            <LinearLayout
-                android:id="@+id/ll_start_trip"
+
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_start_trip_material"
+                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginEnd="15dp"
-                android:background="@color/theme_blue"
-                android:gravity="center"
-                android:orientation="horizontal"
+                android:text=""
+                android:textAllCaps="false"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                app:backgroundTint="@color/theme_blue"
+                app:cornerRadius="10dp"
                 app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="2.7"
                 app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintHeight_percent="0.4561"
                 app:layout_constraintStart_toEndOf="@+id/vv_divider_anchor"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.63157"
-                app:layout_constraintWidth_percent="0.43733">
+                app:layout_constraintWidth_percent="0.43733"
+                app:rippleColor="@color/white" />
 
-                <TextView
-                    android:id="@+id/tv_start_button"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Start Trip"
-                    android:textColor="@color/white"
-                    android:textStyle="bold" />
-
-            </LinearLayout>
+            <TextView
+                android:id="@+id/btn_start_trip"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:gravity="center"
+                android:textColor="@color/white"
+                android:text="Start Trip"
+                android:textAllCaps="false"
+                android:textStyle="bold"
+                app:cornerRadius="10dp"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="2.7"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toEndOf="@+id/vv_divider_anchor"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintVertical_bias="0.63157"
+                app:layout_constraintWidth_percent="0.43733" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
