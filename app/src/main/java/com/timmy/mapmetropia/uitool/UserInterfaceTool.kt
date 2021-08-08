@@ -23,6 +23,7 @@ import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.RelativeLayout
 import android.widget.TextView
+import kotlin.math.roundToInt
 
 /**
  *
@@ -278,7 +279,7 @@ object UserInterfaceTool {
     fun getPixelFromDpByDevice(context: Context, dpSize: Int): Int {
         val displayMetrics = context.resources.displayMetrics
         val realSpSize = ((dpSize * displayMetrics.widthPixels).toFloat() / displayMetrics.density / 360f).toInt()
-        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, realSpSize.toFloat(), context.resources.displayMetrics).toInt()
+        return TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, realSpSize.toFloat(), context.resources.displayMetrics).roundToInt()
     }
 
     /**

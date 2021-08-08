@@ -20,7 +20,8 @@
             android:id="@+id/tv_walk_time"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:padding="3dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
             android:text="8"
             android:textColor="@color/txt_dark"
             android:textStyle="bold"
@@ -30,7 +31,8 @@
 
         <TextView
             android:id="@+id/tv_short_no_bus"
-            android:padding="3dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="025"
@@ -43,7 +45,8 @@
         <TextView
             android:id="@+id/tv_short_no_tram"
             android:layout_width="wrap_content"
-            android:padding="3dp"
+            android:paddingStart="4dp"
+            android:paddingEnd="4dp"
             android:layout_height="wrap_content"
             android:text="Red"
             android:textColor="@color/theme_red"

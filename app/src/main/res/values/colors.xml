@@ -17,5 +17,10 @@
     <color name="transparent">#00000000</color>
     <color name="txt_gray">#85000000</color>
     <color name="gray">#b2bdd1</color>
+    <color name="divider_gray">#e0e7f0</color>
+    <color name="icon_back_gray">#802e426b</color>
+    <color name="icon_back_dark">#e1000000</color>
+    <color name="btn_back_gray">#141b3058</color>
+    <color name="gray_point">#eaeef0</color>
 
 </resources>

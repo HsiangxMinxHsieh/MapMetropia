@@ -5,6 +5,7 @@
 
     <string name="total_spend_time">%1$s min</string>
     <string name="total_price">Buy ($%1$s)</string>
+    <string name="walk_content">Walking %1$s min (%2$s)</string>
 
 
 </resources>

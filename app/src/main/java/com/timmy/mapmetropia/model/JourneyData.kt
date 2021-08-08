@@ -2,6 +2,7 @@ package com.timmy.mapmetropia.model
 
 import com.google.android.gms.maps.model.LatLng
 import com.google.gson.annotations.SerializedName
+import com.timmy.mapmetropia.util.format
 
 
 data class JourneyData(
@@ -84,7 +85,7 @@ data class JourneyData(
     ) {
         fun oriLatLng() = LatLng(originLat,originLng)
         fun destinationLatLng() = LatLng(destinationLat,destinationLng)
-
+        fun estimateToMin() = (estimatedTime.toDouble() / 60).format("#")
         data class StepsDetail(
             @SerializedName("arrival_stop")
             val arrivalStop: ArrivalStop = ArrivalStop(),

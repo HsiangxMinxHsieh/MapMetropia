@@ -112,7 +112,7 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
                 vvIosBar.setMarginByDpUnit(0, 4, 0, 0)
                 vvIosBar.background = getRoundBg(mContext, rc, R.color.gray)
 
-                val rvTopBottomMargin = (clSummaryInBottomHeight / 2 - calculateDistance * 0.008).toInt()
+                val rvTopBottomMargin = (clSummaryInBottomHeight / 2 - calculateDistance * 0.0065).toInt()
                 rvJourneySummary.setMarginByDpUnit(15, rvTopBottomMargin, 15, rvTopBottomMargin)
 //                rvJourneySummary.setViewSizeByDpUnit(widthPixel, clSummaryInBottomHeight) // 不知道為什麼，設定這個會讓裡面的RecyclerView異常，只好改用設定Margin的方式來調整大小。
                 rvJourneyDetail.apply {
@@ -125,8 +125,8 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
             behavior.peekHeight = ViewTool.DpToPx(mContext, ((clSummaryInBottomHeight + clSummaryHeight) * 1.1).toFloat()) // 偷看高度設定 // clSummaryInBottom + clSummary
 
             val cn = 10 //corner
-            llBuy.background = getRectangleBg(mContext, cn, cn, cn, cn, R.color.light_green, 0, 0)
-            llStartTrip.background = getRectangleBg(mContext, cn, cn, cn, cn, R.color.theme_blue, 0, 0)
+            llBuy.background = getRoundBg(mContext, cn, R.color.light_green)
+            llStartTrip.background = getRoundBg(mContext, cn, R.color.theme_blue)
 
             tvTotalSpendTime.setTextSize(17)
             tvTotalSpendMoneyButton.setTextSize(16)
@@ -569,13 +569,13 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
 //            binding.clContent.background = getRectangleBg(context, 0, 0, 0, 0, R.color.theme_green, 0, 0)
 //            binding.clContent.layoutParams = ConstraintLayout.LayoutParams(ConstraintLayout.LayoutParams.WRAP_CONTENT,ConstraintLayout.LayoutParams.WRAP_CONTENT)
             binding.ivMode.setViewSizeByDpUnit(20, 20)
-            val cn = 4 //corner
 
+            val cn = 4 //corner
 //            binding.tvWalkTime.background = getRectangleBg(context, cn, cn, cn, cn, R.color.transparent, R.color.transparent, 1)
             binding.tvWalkTime.setTextSize(14)
-            binding.tvShortNoBus.background = getRectangleBg(context, cn, cn, cn, cn, R.color.transparent, R.color.theme_blue, 1)
+            binding.tvShortNoBus.background = getRoundBg(context, cn, R.color.transparent, R.color.theme_blue, 1)
             binding.tvShortNoBus.setTextSize(14)
-            binding.tvShortNoTram.background = getRectangleBg(context, cn, cn, cn, cn, R.color.transparent, R.color.theme_red, 1)
+            binding.tvShortNoTram.background = getRoundBg(context, cn, R.color.transparent, R.color.theme_red, 1)
             binding.tvShortNoTram.setTextSize(14)
 
             binding.ivNext.setMarginByDpUnit(6, 0, 6, 0)
@@ -601,7 +601,7 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
         }
 
         /**依照dataMode決定顯示什麼*/
-        fun AdapterBottomJourneySummaryBinding.setShowText(data: JourneyData.Step, position: Int) {
+        private fun AdapterBottomJourneySummaryBinding.setShowText(data: JourneyData.Step, position: Int) {
 
             when (data.mode) {
                 StepMode.Walk.content -> {
@@ -609,9 +609,7 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
                     this.tvShortNoBus.isVisible = false
                     this.tvShortNoTram.isVisible = false
 //                    logi("setShowText", "這筆data的mode是=>${data.mode},花費時間是=>${data.estimatedTime},路徑編號是=>${data.shortNameNo}")
-                    this.tvWalkTime.text = ((data.estimatedTime.toDouble() / 60).format("#")).toString()
-                    logi("setShowText", " (data.estimatedTime.toDouble() / 60) 計算值是 =>${(data.estimatedTime.toDouble() / 60)}")
-                    logi("setShowText", " this.tvWalkTime.text  設定完成後是 =>${this.tvWalkTime.text}")
+                    this.tvWalkTime.text = data.estimateToMin()
 
                 }
                 StepMode.Bus.content -> {
@@ -648,12 +646,60 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
     /** 底部視圖的詳細行程的 Adapter */
     class JourneyDetailAdapter(val context: Context) :
         BaseRecyclerViewDataBindingAdapter<JourneyData.Step>(context, R.layout.adapter_bottom_journey_detail) {
-
+        val heightPixel by lazy { context.resources.displayMetrics.heightPixels }
         override fun initViewHolder(viewHolder: ViewHolder) {
             val binding = viewHolder.binding as AdapterBottomJourneyDetailBinding
-            binding.icDeparture.ivTitle.background = getRoundBg(context, 50, R.color.theme_blue, 0, 0)
-//            binding.icWalk.ivTitle.setViewSize(100,1000)
-//            binding.icDestination.ivTitle.background = getRoundBg(context, 50, R.color.theme_blue, 0, 0)
+            //初始化各include視圖
+            val cn = 100 // corner
+            val ir = 11 // icon radius
+            val nr = 4 //number radius
+            binding.icDeparture.apply {
+                ivTitle.background = getRoundBg(context, cn, R.color.theme_blue)
+                vvGrayPoint1.background = getRoundBg(context, cn, R.color.gray_point)
+                tvDepartureName.setTextSize(14)
+                tvStartTime.setTextSize(14)
+            }
+            binding.icWalk.apply {
+                ivTitle.background = getRoundBg(context, ir, R.color.icon_back_gray)
+                vvGrayPoint1.background = getRoundBg(context, cn, R.color.gray_point)
+                vvGrayPoint2.background = getRoundBg(context, cn, R.color.gray_point)
+                tvWalkStatus.setTextSize(14)
+                btnPreview.apply {
+                    background = getRoundBg(context, 7, R.color.btn_back_gray)
+                    setTextSize(14)
+                }
+            }
+            binding.icBus.apply {
+                //左側Icon區
+                vvGrayPoint1.background = getRoundBg(context, cn, R.color.gray_point)
+                ivTitle1.background = getRoundBg(context, ir, R.color.icon_back_dark)
+                vvBusRound.background = getRoundBg(context, cn, R.color.theme_blue)
+                ivTitle2.background = getRoundBg(context, ir, R.color.icon_back_dark)
+                vvGrayPoint2.background = getRoundBg(context, cn, R.color.gray_point)
+
+                //右側Content區
+                val intervalTop= (heightPixel /200)+3 // 嘗試結果。
+                tvBusNoDetail.setTextSize(14)
+                tvArrivalTime.setTextSize(14)
+                tvArrvingStatus.apply {
+                    setMarginByDpUnit(0,intervalTop,0,0)
+                    setTextSize(14)
+                }
+                tvWheeler.setTextSize(14)
+                tvEndTime.setTextSize(14)
+                vvAnchorContentBottom.setMarginByDpUnit(0, intervalTop, 0, 0)
+                tvBusNoShort.apply {
+                    setMarginByDpUnit(0, intervalTop, 0, 0)
+                    setTextSize(14)
+                    background = getRoundBg(context, nr, R.color.transparent, R.color.theme_blue, 1)
+                }
+            }
+            binding.icTram.apply {
+
+            }
+            binding.icDestination.apply {
+
+            }
         }
 
         override fun onBindViewHolder(viewHolder: ViewHolder, position: Int, data: JourneyData.Step) {
@@ -674,7 +720,8 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
                 }
                 1 -> { //走路
                     binding.icWalk.apply {
-                        tvDepartureName.text="走路"
+//                        val duration = (data.endedOn-data.startedOn)
+                        tvWalkStatus.text = context.getString(R.string.walk_content).format(data.estimateToMin(), data.distance.meterToMilesOrFit())
 
                     }
                 }
