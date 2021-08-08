@@ -88,7 +88,6 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
     }
 
     private fun initView() {
-        screenRatio //必須於此取一次，staticRatio才會有值
         val calculateDistance = heightPixel.toDouble() // 公用距離，為高度double值
         mBinding.apply {
             ivBack.apply {
@@ -105,7 +104,7 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
 //            clSummary.setViewSizeByDpUnit(widthPixel, clSummaryHeight) // 不知道為什麼，設定這個會讓Layout裡面的約束失效、內容消失。
             val cardCorner = (calculateDistance * 0.03).toInt()
 
-            val clSummaryInBottomHeight = (calculateDistance * 0.031).toInt()
+            val clSummaryInBottomHeight = (calculateDistance * 0.03).toInt()
             icBottom.apply {
                 slContent.setCornerRadius(cardCorner)
                 bottomSheet.maxHeight = (calculateDistance * 0.8).toInt() // 最大高度設置為螢幕高的 約0.8(Zeplin計算結果)
@@ -116,9 +115,9 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
                 rvJourneySummary.setMarginByDpUnit(15, rvTopBottomMargin, 15, rvTopBottomMargin)
 //                rvJourneySummary.setViewSizeByDpUnit(widthPixel, clSummaryInBottomHeight) // 不知道為什麼，設定這個會讓裡面的RecyclerView異常，只好改用設定Margin的方式來調整大小。
                 rvJourneyDetail.apply {
-                    setViewSize(widthPixel-100 , calculateDistance.testViewSize(0.95).toInt()) // 一定要設定寬高才可以滾動(不要問我為什麼，我只能說是之前的經驗...Orz)
+                    setViewSize(widthPixel - 100, calculateDistance.testViewSize(0.95).toInt()) // 一定要設定寬高才可以滾動(不要問我為什麼，我只能說是之前的經驗...Orz)
                     setMarginByDpUnit(15, 0, 15, 0)
-                    setPaddingByDpUnit(0,0,0,(calculateDistance * 0.02).toInt())
+                    setPaddingByDpUnit(0, 0, 0, (calculateDistance * 0.02).toInt())
                 }
             }
 
@@ -201,9 +200,9 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
     }
 
     private fun initScreenStatus() {
-//        setBottomSheetState(BottomSheetBehavior.STATE_COLLAPSED)
+        setBottomSheetState(BottomSheetBehavior.STATE_COLLAPSED)
 
-        setBottomSheetState(BottomSheetBehavior.STATE_EXPANDED) // 調整畫面中
+//        setBottomSheetState(BottomSheetBehavior.STATE_EXPANDED) // 調整畫面中
     }
 
     override fun onBackPressed(): Boolean {
@@ -537,7 +536,6 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
                     addItem(journeyData.steps)
                 }
             }
-            logi("showBottomView", "rvJourneySummary 的寬高是=>[${rvJourneySummary.layoutParams.width},${rvJourneySummary.layoutParams.height}]")
 
             //遮蔽Behavior事件，讓使用者點到RecyclerView可以滑動
             //不知道為什麼，不能把這個觸摸事件直接設定到RecyclerView上面。
@@ -678,27 +676,52 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
                 vvGrayPoint2.background = getRoundBg(context, cn, R.color.gray_point)
 
                 //右側Content區
-                val intervalTop= (heightPixel /200)+3 // 嘗試結果。
-                tvBusNoDetail.setTextSize(14)
-                tvArrivalTime.setTextSize(14)
+                val intervalTop = (heightPixel / 200) + 3 // 嘗試結果。
+                tvBusName.setTextSize(14)
+                tvStartTime.setTextSize(14)
                 tvArrvingStatus.apply {
-                    setMarginByDpUnit(0,intervalTop,0,0)
+                    setMarginByDpUnit(0, intervalTop, 0, 0)
                     setTextSize(14)
                 }
                 tvWheeler.setTextSize(14)
                 tvEndTime.setTextSize(14)
                 vvAnchorContentBottom.setMarginByDpUnit(0, intervalTop, 0, 0)
-                tvBusNoShort.apply {
+                tvBusNo.apply {
                     setMarginByDpUnit(0, intervalTop, 0, 0)
                     setTextSize(14)
                     background = getRoundBg(context, nr, R.color.transparent, R.color.theme_blue, 1)
                 }
             }
             binding.icTram.apply {
+                //左側Icon區
+                vvGrayPoint1.background = getRoundBg(context, cn, R.color.gray_point)
+                ivTitle1.background = getRoundBg(context, ir, R.color.icon_back_dark)
+                vvBusRound.background = getRoundBg(context, cn, R.color.theme_red)
+                ivTitle2.background = getRoundBg(context, ir, R.color.icon_back_dark)
+                vvGrayPoint2.background = getRoundBg(context, cn, R.color.gray_point)
+
+                //右側Content區
+                val intervalTop = (heightPixel / 200) + 3 // 嘗試結果。
+                tvTramName.setTextSize(14)
+                tvStartTime.setTextSize(14)
+                tvArrvingStatus.apply {
+                    setMarginByDpUnit(0, intervalTop, 0, 0)
+                    setTextSize(14)
+                }
+                tvWheeler.setTextSize(14)
+                tvEndTime.setTextSize(14)
+                vvAnchorContentBottom.setMarginByDpUnit(0, intervalTop, 0, 0)
+                tvTramNo.apply {
+                    setMarginByDpUnit(0, intervalTop, 0, 0)
+                    setTextSize(14)
+                    background = getRoundBg(context, nr, R.color.transparent, R.color.theme_red, 1)
+                }
 
             }
             binding.icDestination.apply {
-
+                vvGrayPoint1.background = getRoundBg(context, cn, R.color.gray_point)
+                tvDestinationName.setTextSize(14)
+                tvEndTime.setTextSize(14)
             }
         }
 
@@ -727,13 +750,22 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
                 }
                 2 -> { //巴士
                     binding.icBus.apply {
-
-
+                        tvWheeler.text = data.destinationName
+                        tvBusName.text = data.shortName
+                        tvStartTime.text = data.startedOn.toTimeInclude12hour()
+                        tvArrvingStatus.text = data.arrive.getArriveTime()
+                        tvEndTime.text = data.endedOn.toTimeInclude12hour()
+                        tvBusNo.text = data.shortNameNo
                     }
                 }
                 3 -> { //電車
                     binding.icTram.apply {
-
+                        tvWheeler.text = data.destinationName
+                        tvTramName.text = data.shortName
+                        tvStartTime.text = data.startedOn.toTimeInclude12hour()
+                        tvArrvingStatus.text = data.arrive.getArriveTime()
+                        tvEndTime.text = data.endedOn.toTimeInclude12hour()
+                        tvTramNo.text = data.shortNameNo
 
                     }
                 }
@@ -743,6 +775,18 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
                         tvEndTime.text = data.endedOn.toTimeInclude12hour()
                     }
                 }
+            }
+        }
+
+        /**取得跟系統時間的差距，回傳 Arriving (小於3分鐘) 或 Arrive in X min*/
+        private fun Int.getArriveTime(): String {
+            val calculateTime = this.toLong() * DateTool.oneSec //依毫秒來計算較為準確。
+
+            val interval = (calculateTime - Date().time) / DateTool.oneMin
+            return when {
+                interval < 0 -> "Arrive in $interval min" //面試官說顯示負的他知道
+                interval < 3 -> "Arriving"
+                else -> "Arrive in $interval min"
             }
         }
 
@@ -784,3 +828,4 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
     }
 
 }
+

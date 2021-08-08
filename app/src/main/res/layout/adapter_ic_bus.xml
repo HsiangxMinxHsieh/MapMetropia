@@ -107,20 +107,21 @@
                 app:layout_constraintTop_toTopOf="parent">
 
                 <TextView
-                    android:id="@+id/tv_bus_no_detail"
+                    android:id="@+id/tv_bus_name"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="4dp"
                     android:text="Calhoun Rd @ Wheeler St"
                     android:textColor="@color/txt_dark"
                     android:textStyle="bold"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toStartOf="@+id/tv_arrival_time"
+                    app:layout_constraintEnd_toStartOf="@+id/tv_start_time"
                     app:layout_constraintHorizontal_bias="0"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
                 <TextView
-                    android:id="@+id/tv_arrival_time"
+                    android:id="@+id/tv_start_time"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="3:46 PM"
@@ -133,7 +134,7 @@
             </androidx.constraintlayout.widget.ConstraintLayout>
 
             <TextView
-                android:id="@+id/tv_bus_no_short"
+                android:id="@+id/tv_bus_no"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="18dp"
@@ -146,7 +147,6 @@
                 app:layout_constraintTop_toBottomOf="@+id/cl_bus_title" />
 
             <ImageView
-                app:layout_constraintVertical_bias="0.3"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginTop="8dp"
@@ -154,8 +154,9 @@
                 app:layout_constraintBottom_toBottomOf="@+id/vv_anchor_content_bottom"
                 app:layout_constraintDimensionRatio="1"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHeight_percent="0.25"
                 app:layout_constraintTop_toBottomOf="@+id/cl_bus_title"
-                app:layout_constraintHeight_percent="0.25" />
+                app:layout_constraintVertical_bias="0.3" />
 
             <TextView
                 android:id="@+id/tv_arrving_status"
@@ -168,7 +169,7 @@
                 android:textColor="@color/txt_gray"
                 android:textStyle="bold"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/tv_bus_no_short" />
+                app:layout_constraintTop_toBottomOf="@+id/tv_bus_no" />
 
             <View
                 android:id="@+id/vv_anchor_content_bottom"
@@ -182,17 +183,6 @@
                 app:layout_constraintStart_toStartOf="@+id/cl_content"
                 app:layout_constraintTop_toBottomOf="@+id/tv_arrving_status" />
 
-            <!--            <View-->
-            <!--                android:id="@+id/vv_anchor"-->
-            <!--                android:layout_width="0dp"-->
-            <!--                android:layout_height="0dp"-->
-            <!--                android:background="@color/theme_blue"-->
-            <!--                app:layout_constraintBottom_toBottomOf="parent"-->
-            <!--                app:layout_constraintDimensionRatio="0.14"-->
-            <!--                app:layout_constraintEnd_toEndOf="parent"-->
-            <!--                app:layout_constraintStart_toStartOf="parent"-->
-            <!--                app:layout_constraintTop_toTopOf="parent"-->
-            <!--                app:layout_constraintWidth_percent="0.35" />-->
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/cl_bus_bottom"
                 android:layout_width="match_parent"
@@ -204,6 +194,7 @@
                     android:id="@+id/tv_wheeler"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_marginEnd="4dp"
                     android:text="Wheeler"
                     android:textColor="@color/txt_dark"
                     android:textStyle="bold"

@@ -5,42 +5,69 @@
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="300dp">
-
-        <ImageView
-            android:id="@+id/iv_title"
-            android:layout_width="0dp"
-            android:layout_height="0dp"
-            android:layout_marginTop="4dp"
-            android:layout_marginBottom="2dp"
-            android:src="@drawable/ic_icon_destination"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintDimensionRatio="1"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_percent="0.053333" />
+        android:paddingBottom="270dp">
 
         <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_title"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintWidth_percent="0.09">
+
+            <View
+                android:id="@+id/vv_gray_point_1"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="3dp"
+                android:layout_marginBottom="9dp"
+                android:background="@color/gray_point"
+                app:layout_constraintBottom_toTopOf="@+id/iv_title"
+                app:layout_constraintDimensionRatio="1"
+                app:layout_constraintEnd_toEndOf="@+id/iv_title"
+                app:layout_constraintStart_toStartOf="@+id/iv_title"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.35" />
+
+            <ImageView
+                android:id="@+id/iv_title"
+                android:layout_width="0dp"
+                android:layout_height="0dp"
+                android:layout_marginTop="4dp"
+                android:src="@drawable/ic_icon_destination"
+                app:layout_constraintBottom_toBottomOf="parent"
+                app:layout_constraintDimensionRatio="1"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintWidth_percent="0.8" />
+
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
+
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:id="@+id/cl_content"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="1"
-            app:layout_constraintStart_toEndOf="@id/iv_title"
+            app:layout_constraintStart_toEndOf="@id/cl_title"
             app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintWidth_percent="0.9">
+            app:layout_constraintWidth_percent="0.87">
 
             <TextView
+                app:layout_constraintEnd_toStartOf="@+id/tv_end_time"
+                app:layout_constraintHorizontal_bias="0"
+                android:layout_marginEnd="4dp"
                 android:id="@+id/tv_destination_name"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="4dp"
-                android:text="Houston Zoo"
+                android:text="MacGregor Park"
                 android:textColor="@color/txt_dark"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/tv_end_time"
-                app:layout_constraintHorizontal_bias="0"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 
@@ -48,7 +75,7 @@
                 android:id="@+id/tv_end_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="4:16 PM"
+                android:text="3:35 PM"
                 android:textColor="@color/txt_dark"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"

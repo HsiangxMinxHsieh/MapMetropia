@@ -115,9 +115,10 @@
 
             <LinearLayout
                 android:id="@+id/ll_buy"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="0dp"
-                android:layout_marginStart="15dp"
                 android:layout_height="0dp"
+                android:layout_marginStart="15dp"
                 android:background="@color/light_green"
                 android:gravity="center"
                 android:orientation="horizontal"
@@ -159,8 +160,8 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <LinearLayout
-
                 android:id="@+id/ll_journey_time"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal"
