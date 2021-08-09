@@ -79,10 +79,7 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
     lateinit var journeyData: JourneyData
     private fun initData() { // 初始化所有資料，此為讀入raw的Json檔
         val journeyDataStr = getRaw(mContext, R.raw.transit_data)
-
         journeyData = journeyDataStr.toGson(JourneyData())
-
-        logi("initData", "journeyData轉換完成，是=>${journeyData.toJson()}")
 
     }
 
@@ -114,7 +111,7 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
                 rvJourneySummary.setMarginByDpUnit(15, rvTopBottomMargin, 15, rvTopBottomMargin)
 //                rvJourneySummary.setViewSizeByDpUnit(widthPixel, clSummaryInBottomHeight) // 不知道為什麼，設定這個會讓裡面的RecyclerView異常，只好改用設定Margin的方式來調整大小。
                 rvJourneyDetail.apply {
-                    setViewSize(widthPixel - 100, calculateDistance.testViewSize(0.95).toInt()) // 一定要設定寬高才可以滾動(不要問我為什麼，我只能說是之前的經驗...Orz)
+                    setViewSize(widthPixel - 100, (calculateDistance * 0.95).toInt()) // 一定要設定寬高才可以滾動(不要問我為什麼，我只能說是之前的經驗...Orz)
                     setMarginByDpUnit(15, 0, 15, 0)
                     setPaddingByDpUnit(0, 0, 0, (calculateDistance * 0.02).toInt())
                 }
@@ -123,14 +120,12 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
             behavior.peekHeight = ViewTool.DpToPx(mContext, ((clSummaryInBottomHeight + clSummaryHeight) * 1.1).toFloat()) // 偷看高度設定 // clSummaryInBottom + clSummary
 
             val cn = 10 //corner
-//            btnBuyTicket.background = getRoundBg(mContext, cn, R.color.light_green)
-//            btnStartButton.background = getRoundBg(mContext, cn, R.color.theme_blue)
+//            btnBuyTicket.background = getRoundBg(mContext, cn, R.color.light_green) // 不可以設定background，否則會造成水波紋效果失效！
+//            btnStartButton.background = getRoundBg(mContext, cn, R.color.theme_blue) // 不可以設定background，否則會造成水波紋效果失效！
 
             tvTotalSpendTime.setTextSize(17)
             tvStartTime.setTextSize(14)
             tvEndTime.setTextSize(14)
-            tvBuy.setTextSize(16)
-            btnStartTrip.setTextSize(16)
 
         }
 
@@ -210,7 +205,7 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
     }
 
     override fun onBackPressed(): Boolean {
-        return when {
+        return when { // 如果
             behavior.state != BottomSheetBehavior.STATE_COLLAPSED -> {
                 setBottomSheetState(BottomSheetBehavior.STATE_COLLAPSED)
                 true
@@ -395,7 +390,6 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
                 if (context == null)
                     return
                 deviceLocation = location
-//                logi(TAG, "現在的位置是===>$location")
                 addMyLocationMethod(location)
             }
 
@@ -415,17 +409,10 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
         myLocationMark = addLocationCustomMarker(myLocation.latLng(), MarkerType.DeviceLoation)
 
         myLocationMark?.rotation = sensorOri.getPicRotationAngle()
-//        logi(TAG,"取到的角度資訊是===>${myLocation.bearing}")
 
         return myLocationMark
     }
 
-
-    private fun showFailMessageMethod() {
-        GlobalScope.launch(Dispatchers.Main) {
-            Toast.makeText(mContext, "路徑規劃失敗！請稍後再試！", Toast.LENGTH_SHORT).show()
-        }
-    }
 
     private fun zoomToPoint(latLng: LatLng?, needAnimation: Boolean = false, zoom: Float = 18f) {
         if (latLng == null) {
@@ -513,8 +500,6 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
 
         mBinding.flSheet.postDelayed({
 
-//            logi(TAG, "現在要設定的狀態是===>$state")
-
             behavior.state = state
             bottomSheetStatus = state
 
@@ -559,7 +544,6 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
                     }
                 }
             }
-            logi("showBottomView", "設定前，此時儲存的bottomSheetStatus是=>${bottomSheetStatus}")
             setBottomSheetState(bottomSheetStatus)
 
         }
@@ -613,7 +597,6 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
                     this.tvWalkTime.isVisible = true
                     this.tvShortNoBus.isVisible = false
                     this.tvShortNoTram.isVisible = false
-//                    logi("setShowText", "這筆data的mode是=>${data.mode},花費時間是=>${data.estimatedTime},路徑編號是=>${data.shortNameNo}")
                     this.tvWalkTime.text = data.estimateToMin()
 
                 }
@@ -746,8 +729,8 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
             val icArray = arrayOf(binding.icDeparture, binding.icWalk, binding.icBus, binding.icTram, binding.icDestination)
             hideAllIcInLayout(icArray) // 先把所有IncludeLayout關閉，再根據ItemViewType打開。
             val type = getItemViewType(position)
-//            logi("onBindViewHolder","position是=>$position 時,type是=>${type}")
             showBindingByType(type, icArray)
+
             //開始疲勞的塞值
             when (type) {
                 0 -> {// 起點
@@ -804,7 +787,6 @@ class MapsFragment : BaseFragment<FragmentMapsBinding>(FragmentMapsBinding::infl
                     }
                 }
             }
-
         }
 
         /**取得跟系統時間的差距，回傳 Arriving (小於3分鐘) 或 Arrive in X min*/

@@ -55,12 +55,3 @@ private fun banTextViewHorizontallyScrolling(view: View) {
         view.setHorizontallyScrolling(false)
     }
 }
-
-/**取得這個地點與傳入地點的距離(單位是公尺)*/
-fun Location.getDistance(location: Location): Double {
-    val result = FloatArray(3)
-    Location.distanceBetween(this.latitude, this.longitude, location.latitude, location.longitude, result)
-    return result[0].roundToDigit(5)
-}
-
-fun Float.roundToDigit(digit: Int = 3) = String.format("%.${digit}f", this).toDouble()

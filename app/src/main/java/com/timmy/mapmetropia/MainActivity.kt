@@ -1,16 +1,14 @@
 package com.timmy.mapmetropia
 
 import android.content.Context
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.WindowManager
 
-import com.google.android.gms.maps.GoogleMap
 import com.timmy.mapmetropia.base.BaseActivity
 import com.timmy.mapmetropia.databinding.ActivityMainBinding
 import com.timmy.mapmetropia.listener.BackListener
 import com.timmy.mapmetropia.tab.MapsFragment
-import com.timmy.mapmetropia.uitool.UserInterfaceTool
+import com.timmy.mapmetropia.uitool.hideSystemUI
 import com.timmy.mapmetropia.util.FragmentModular
 import com.timmy.mapmetropia.util.loge
 import com.timmy.mapmetropia.util.logi
@@ -34,7 +32,7 @@ class MainActivity : BaseActivity<ActivityMainBinding>({ ActivityMainBinding.inf
         loge(TAG,"heightPixel=>$heightPixel")
 
         //全屏模式設置
-        UserInterfaceTool.hideSystemUI(mBinding.root)
+        hideSystemUI(mBinding.root)
         window.statusBarColor = context.getColor(R.color.transparent)
         this.window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN);//去掉信息欄
         //tab 設定

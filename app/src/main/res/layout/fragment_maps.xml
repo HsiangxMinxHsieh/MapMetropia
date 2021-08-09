@@ -94,9 +94,9 @@
 
             <LinearLayout
                 android:id="@+id/ll_spend_total_time"
-                android:gravity="start"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:gravity="start"
                 android:orientation="horizontal"
                 app:layout_constraintBottom_toTopOf="@+id/btn_buy_material"
                 app:layout_constraintEnd_toStartOf="@+id/vv_divider_anchor"
@@ -118,17 +118,13 @@
                 android:id="@+id/ll_buy"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_marginStart="15dp"
+                android:clickable="false"
                 android:gravity="center"
                 android:orientation="horizontal"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintEnd_toStartOf="@+id/vv_divider_anchor"
-                app:layout_constraintHeight_percent="0.4561"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.63157"
-                app:layout_constraintWidth_percent="0.43733">
+                app:layout_constraintBottom_toBottomOf="@+id/btn_buy_material"
+                app:layout_constraintEnd_toEndOf="@+id/btn_buy_material"
+                app:layout_constraintStart_toStartOf="@+id/btn_buy_material"
+                app:layout_constraintTop_toTopOf="@+id/btn_buy_material">
 
                 <ImageView
                     android:layout_width="wrap_content"
@@ -138,24 +134,26 @@
 
                 <TextView
                     android:id="@+id/tv_buy"
+                    style="@style/secondary_button_text"
+                    android:layout_marginStart="2dp"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:padding="0dp"
                     android:text="Buy ($1.25)"
-                    android:textColor="@color/theme_green"
                     android:textStyle="bold" />
 
             </LinearLayout>
+
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_buy_material"
-                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+                style="@style/secondary_button_style"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginStart="15dp"
                 android:lines="1"
                 android:maxLines="1"
                 android:textAllCaps="false"
-                android:textColor="@color/theme_green"
                 android:textStyle="bold"
                 app:backgroundTint="@color/light_green"
                 app:cornerRadius="10dp"
@@ -167,7 +165,10 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.63157"
                 app:layout_constraintWidth_percent="0.43733"
-                app:rippleColor="@color/theme_green" />
+                />
+
+
+
             <View
                 android:id="@+id/vv_divider_anchor"
                 android:layout_width="1dp"
@@ -179,10 +180,10 @@
                 app:layout_constraintTop_toTopOf="parent" />
 
             <LinearLayout
-                android:gravity="end"
                 android:id="@+id/ll_journey_time"
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
+                android:gravity="end"
                 android:orientation="horizontal"
                 app:layout_constraintBottom_toTopOf="@+id/btn_start_trip_material"
                 app:layout_constraintEnd_toEndOf="@+id/btn_start_trip"
@@ -216,10 +217,9 @@
             </LinearLayout>
 
 
-
             <com.google.android.material.button.MaterialButton
                 android:id="@+id/btn_start_trip_material"
-                style="@style/Widget.MaterialComponents.Button.UnelevatedButton"
+                style="@style/main_button_style"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:layout_marginEnd="15dp"
@@ -227,7 +227,6 @@
                 android:textAllCaps="false"
                 android:textSize="16sp"
                 android:textStyle="bold"
-                app:backgroundTint="@color/theme_blue"
                 app:cornerRadius="10dp"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintDimensionRatio="2.7"
@@ -236,25 +235,22 @@
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintVertical_bias="0.63157"
                 app:layout_constraintWidth_percent="0.43733"
-                app:rippleColor="@color/white" />
+                 />
 
             <TextView
                 android:id="@+id/btn_start_trip"
+                style="@style/main_button_text"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
                 android:gravity="center"
-                android:textColor="@color/white"
                 android:text="Start Trip"
                 android:textAllCaps="false"
                 android:textStyle="bold"
                 app:cornerRadius="10dp"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintDimensionRatio="2.7"
-                app:layout_constraintEnd_toEndOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/vv_divider_anchor"
-                app:layout_constraintTop_toTopOf="parent"
-                app:layout_constraintVertical_bias="0.63157"
-                app:layout_constraintWidth_percent="0.43733" />
+                app:layout_constraintBottom_toBottomOf="@+id/btn_start_trip_material"
+                app:layout_constraintEnd_toEndOf="@+id/btn_start_trip_material"
+                app:layout_constraintStart_toStartOf="@+id/btn_start_trip_material"
+                app:layout_constraintTop_toTopOf="@+id/btn_start_trip_material" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.constraintlayout.widget.ConstraintLayout>
